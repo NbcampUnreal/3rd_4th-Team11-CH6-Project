@@ -4,7 +4,8 @@
 #include "Engine/GameInstance.h"
 #include "RGameInstance.generated.h"
 
-class UOutGameUIManager;
+class UROutGameUIManager;
+class URBaseOutGameWidget;
 
 UCLASS()
 class PROJECD_API URGameInstance : public UGameInstance
@@ -16,9 +17,15 @@ public:
 
 	virtual void Init() override;
 
-	//UI팀  관련 설정
+	// 멀티플레이어 설정
+	virtual void OnWorldChanged(UWorld* OldWorld,UWorld* NewWorld) override;
+
+	// UI팀  관련 설정
 	UFUNCTION(BlueprintCallable,Category="UI")
 	UROutGameUIManager* GetUIManager() const { return UIManager; }
+
+	UFUNCTION(BlueprintCallable,Category="UI")
+	void ShowTitleScreen(); // 타이틀 화면 표시 함수
 
 //---------모드------------
 	//솔로 파티여부
@@ -43,8 +50,13 @@ public:
 		bIsSoloMode = (NewCount <= 1); //인원 1 이하 = 솔로
 	}
 private:
-	//UI팀 관련 설정
+	//UI팀 관련 설정//
+	void InitializeUIManager(); // UIManager 초기화 함수
+	
 	UPROPERTY()
 	UROutGameUIManager* UIManager;
+
+	UPROPERTY(EditDefaultsOnly,Category="UI") // TitleScreen Widget 클래스 참조
+	TSubclassOf<URBaseOutGameWidget> TitleScreenClass;
 	
 };

@@ -29,11 +29,11 @@ public:
 
 //---------모드------------
 	//솔로 파티여부
-	UPROPERTY(Blueprintreadonly, EditAnywhere, Category = "Mode")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Mode")
 	bool bIsSoloMode = true;
 
 	//현재 파티원 수
-	UPROPERTY(Blueprintreadonly, Category = "Mode")
+	UPROPERTY(BlueprintReadOnly, Category = "Mode")
 	int32 PartyCount = 0;
 
 //---------설정------------

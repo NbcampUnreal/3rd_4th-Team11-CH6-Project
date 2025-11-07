@@ -7,6 +7,7 @@
 class UROutGameUIManager;
 class URBaseOutGameWidget;
 class URSlotSelectWidget;
+class UROutGameCharacterDataSubsystem;
 
 //캐릭터 직업 열거형
 UENUM(BlueprintType)
@@ -63,10 +64,7 @@ public:
 	virtual void Init() override;
 	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
 	
-///-------UI 관리----------
-	UFUNCTION(BlueprintCallable, Category="UI")
-	UROutGameUIManager* GetUIManager() const { return UIManager; }
-
+//-------UI 표시----------
 	UFUNCTION(BlueprintCallable, Category="UI")
 	void ShowTitleScreen();
 
@@ -75,6 +73,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="UI")
 	void ShowClassSelectUI();
+	
 
 //-------모드------------
 	//솔로 파티여부
@@ -98,62 +97,7 @@ public:
 		PartyCount = NewCount;
 		bIsSoloMode = (NewCount <= 1); //인원 1 이하 = 솔로
 	}
-
-//------캐릭터 UI 관련 설정 (슬롯,닉네임등)--------
 	
-	// 임시 선택 직업 (UI 흐름용)
-	UPROPERTY()
-	ECharacterClassType TempSelectedClass = ECharacterClassType::None;
-
-	// 캐릭터 슬롯 배열 (Knight, Archer, Mage)
-	UPROPERTY(BlueprintReadWrite, Category="Character")
-	TArray<FCharacterSlotData> CharacterSlots;
-
-	// 현재 선택된 캐릭터 인덱스 (-1 = 미선택)
-	UPROPERTY(BlueprintReadWrite, Category="Character")
-	int32 SelectedCharacterIndex = -1;
-	
-//----------캐릭터 데이터 조회-------------------
-	
-	// 캐릭터 존재 여부 확인
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool HasAnyCharacter() const;
-
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool HasCharacterOfClass(ECharacterClassType Class) const;
-
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool IsSlotEmpty(int32 SlotIndex) const;
-
-	// 슬롯 찾기
-	UFUNCTION(BlueprintCallable, Category="Character")
-	int32 FindAvailableSlotForClass(ECharacterClassType Class) const;
-
-	// 캐릭터 데이터 가져오기
-	UFUNCTION(BlueprintCallable, Category="Character")
-	FCharacterSlotData GetCharacterData(int32 SlotIndex) const;
-
-	UFUNCTION(BlueprintCallable, Category="Character")
-	FCharacterSlotData GetSelectedCharacterData() const;
-	
-//----------캐릭터 데이터 조작-------
-	
-	// 닉네임 유효성 검사
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool IsValidCharacterName(const FString& Name, FString& OutErrorMessage) const;
-
-	// 캐릭터 생성
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool CreateCharacter(int32 SlotIndex, ECharacterClassType Class, const FString& Name);
-
-	// 캐릭터 선택
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool SelectCharacter(int32 SlotIndex);
-
-	// 캐릭터 삭제
-	UFUNCTION(BlueprintCallable, Category="Character")
-	bool DeleteCharacter(int32 SlotIndex);
-
 //--------유틸리티 함수--------------
 	// 직업 열거형 -> 문자열 변환
 	FString GetClassName(ECharacterClassType Class) const;
@@ -168,13 +112,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<URBaseOutGameWidget> ClassSelectWidgetClass;
 
+//---------Getter함수-----	
+	UFUNCTION(BlueprintCallable, Category="UI")
+	UROutGameUIManager* GetUIManager() const { return UIManager; }
+
+	//서브 시스템 접근 함수
+	UFUNCTION(BlueprintCallable,Category="Character",meta=(WorldContext="WorldContextObject"))
+	static UROutGameCharacterDataSubsystem* GetCharacterDataSubsystem(const UObject* WorldContextObject);
+
 private:
 	void InitializeUIManager();
-	void InitializeCharacterSlots();
-	
-	// 닉네임 규칙
-	static constexpr int32 MIN_NAME_LENGTH = 2;
-	static constexpr int32 MAX_NAME_LENGTH = 10;
 
 	UPROPERTY()
 	UROutGameUIManager* UIManager;

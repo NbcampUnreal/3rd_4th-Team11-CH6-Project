@@ -3,6 +3,7 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/RGameInstance.h"
+#include "Core/Subsystem/ROutGameCharacterDataSubsystem.h"
 
 void URSlotSelectWidget::NativeConstruct()
 {
@@ -33,32 +34,39 @@ void URSlotSelectWidget::HandleSlotClick(int32 SlotIndex)
 	URGameInstance* GI=GetGameInstance();
 	if (!GI) return;
 
-	if (GI->IsSlotEmpty(SlotIndex))
+	UROutGameCharacterDataSubsystem* Subsystem=URGameInstance::GetCharacterDataSubsystem(this);
+	if (!Subsystem)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CharacterDataSubsystem 접근 실패!"));
+		return;
+	}
+	
+	if (Subsystem->IsSlotEmpty(SlotIndex))
 	{
 		// 빈 슬롯 -> 대상 슬롯 저장후 직업 선택 UI로 이동
-		GI->SelectedCharacterIndex=SlotIndex; // 직업 선택 이후 해당 슬롯에 생성예정
+		Subsystem->SelectedCharacterIndex=SlotIndex;
 		UE_LOG(LogTemp, Warning, TEXT("빈 슬롯 클릭->직업 선택 UI로 이동(미구현)"));
 
-		// 구현후 주석해제 예정
-		// GI->GetUIManager()->ShowUI(GI->JobSelectWidgetClass);
+		GI->ShowClassSelectUI();
 	}
 	else
 	{
 		//생성된 캐릭터 -> 선택
-		if (GI->SelectCharacter(SlotIndex))
+		if (Subsystem->SelectCharacter(SlotIndex)) 
 		{
-			UE_LOG(LogTemp,Log,TEXT("캐릭터 선택 완료! 슬롯 %d"),SlotIndex);
-			// 게임월드로 이동하는것 구현예정
+			UE_LOG(LogTemp,Log,TEXT("캐릭터 선택 완료! 슬롯 %d"),SlotIndex); // 게임월드로 이동하는것 구현예정
 		}
 	}
+	
+
 }
 
 void URSlotSelectWidget::UpdateSlotUI(int32 SlotIndex, UButton* Button, UTextBlock* NameText, UTextBlock* ClassText)
 {
-	URGameInstance* GI=GetGameInstance();
-	if (!GI) return;
+	UROutGameCharacterDataSubsystem* Subsystem=URGameInstance::GetCharacterDataSubsystem(this);
+	if (!Subsystem) return;
 
-	FCharacterSlotData Data=GI->GetCharacterData(SlotIndex);
+	FCharacterSlotData Data=Subsystem->GetCharacterData(SlotIndex);
 
 	if (Data.bIsCreated)
 	{

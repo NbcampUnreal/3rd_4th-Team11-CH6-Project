@@ -2,6 +2,7 @@
 #include "UI/Manager/ROutGameUIManager.h"
 #include "UI/Base/RBaseOutGameWidget.h"
 #include "UI/Slot/RSlotSelectWidget.h"
+#include "UI/Class/RClassSelectWidget.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -102,6 +103,37 @@ void URGameInstance::ShowSlotSelectUI()
 	}
 }
 
+void URGameInstance::ShowClassSelectUI()
+{
+	if (!UIManager)
+	{
+		UE_LOG(LogTemp,Error,TEXT("UIManager가 Nullptr!!"));
+		return;
+	}
+
+	if (ClassSelectWidgetClass)
+	{
+		UIManager->ShowUI(ClassSelectWidgetClass);
+		UE_LOG(LogTemp,Log,TEXT("직업 선택 UI 표시!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ClassSelectWidgetClass 설정 안됨!!"));
+	}
+}
+
+bool URGameInstance::HasAnyCharacter() const
+{
+	for (const FCharacterSlotData& Slot: CharacterSlots)
+	{
+		if (Slot.bIsCreated)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool URGameInstance::HasCharacterOfClass(ECharacterClassType Class) const
 {
 	for (const FCharacterSlotData& Slot: CharacterSlots)
@@ -114,16 +146,51 @@ bool URGameInstance::HasCharacterOfClass(ECharacterClassType Class) const
 	return false;
 }
 
+bool URGameInstance::IsSlotEmpty(int32 SlotIndex) const
+{
+	if (SlotIndex<0 || SlotIndex>=CharacterSlots.Num())
+	{
+		return true;
+	}
+	return !CharacterSlots[SlotIndex].bIsCreated;
+}
+
 int32 URGameInstance::FindAvailableSlotForClass(ECharacterClassType Class) const
 {
-	if (!HasCharacterOfClass(Class))
+	if (HasCharacterOfClass(Class))
 	{
-		for (int32 i=0; i<CharacterSlots.Num(); i++)
+		return -1; // 이미 해당직업이 있으면 -1 반환
+	}
+
+	//빈 슬롯 찾기
+	for (int32 i = 0; i < CharacterSlots.Num(); i++)
+	{
+		if (IsSlotEmpty(i))
 		{
-			if (IsSlotEmpty(i)) return i;
+			return i;
 		}
 	}
 	return -1;
+}
+
+FCharacterSlotData URGameInstance::GetCharacterData(int32 SlotIndex) const
+{
+	if (SlotIndex<0 || SlotIndex >= CharacterSlots.Num())
+	{
+		UE_LOG(LogTemp,Error,TEXT("유요하지 않은 슬롯 인덱스: %d"),SlotIndex);
+		return FCharacterSlotData();
+	}
+	return CharacterSlots[SlotIndex];
+}
+
+FCharacterSlotData URGameInstance::GetSelectedCharacterData() const
+{
+	if (SelectedCharacterIndex<0 || SelectedCharacterIndex>=CharacterSlots.Num())
+	{
+		UE_LOG(LogTemp,Warning,TEXT("캐릭터 선택 안됨!!"));
+		return FCharacterSlotData();
+	}
+	return CharacterSlots[SelectedCharacterIndex];
 }
 
 bool URGameInstance::IsValidCharacterName(const FString& Name, FString& OutErrorMessage) const
@@ -156,14 +223,9 @@ bool URGameInstance::IsValidCharacterName(const FString& Name, FString& OutError
 	{
 		TCHAR Char=TrimmedName[i];
 		
-		//한글 범위 체크
-		bool bIsKorean=(Char >= 0xAC00 && Char <= 0xD7A3);
-		
-		//영문 대소문자 체크
-		bool bIsEnglish=(Char>='A' && Char <='Z') || (Char>= 'a' && Char <='z');
-
-		//숫자 체크
-		bool bIsNumber=(Char>='0' && Char <='9');
+		bool bIsKorean=(Char >= 0xAC00 && Char <= 0xD7A3); //한글 범위 체크
+		bool bIsEnglish=(Char>='A' && Char <='Z') || (Char>= 'a' && Char <='z'); //영문 대소문자 체크
+		bool bIsNumber=(Char>='0' && Char <='9'); //숫자 체크
 
 		//허용되지 않는 문자 발견
 		if (!bIsKorean && !bIsEnglish && !bIsNumber)
@@ -227,9 +289,8 @@ bool URGameInstance::CreateCharacter(int32 SlotIndex, ECharacterClassType Class,
 		return false;
 	}
 
-	FString TrimmedName=Name.TrimStartAndEnd(); //이름 공백 제거
-
 	//캐릭터 생성
+	FString TrimmedName=Name.TrimStartAndEnd(); //이름 공백 제거
 	CharacterSlots[SlotIndex].bIsCreated=true; //생성됨 표시
 	CharacterSlots[SlotIndex].CharacterClass=Class; // 직업 저장
 	CharacterSlots[SlotIndex].CharacterName=TrimmedName; // 이름 저장
@@ -237,14 +298,6 @@ bool URGameInstance::CreateCharacter(int32 SlotIndex, ECharacterClassType Class,
 
 	//직업이름을 문자열로 전환
 	FString ClassName;
-	switch (Class)
-	{
-	case ECharacterClassType::Knight: ClassName=TEXT("Knight"); break;
-	case ECharacterClassType::Archer: ClassName=TEXT("Archer"); break;
-	case ECharacterClassType::Mage:   ClassName=TEXT("Mage"); break;
-	default:                      ClassName=TEXT("None"); break;
-	}
-
 	UE_LOG(LogTemp,Log,TEXT("캐릭터 생성됨! Slot: %d, Class: %s. Name: '%s'"),SlotIndex,*ClassName,*TrimmedName);
 	return true;
 }
@@ -270,47 +323,6 @@ bool URGameInstance::SelectCharacter(int32 SlotIndex)
 
 	UE_LOG(LogTemp,Log,TEXT("캐릭터 선택됨! Slot: %d, Name:'%s'"),SlotIndex,*CharacterSlots[SlotIndex].CharacterName);
 	return true;
-}
-
-bool URGameInstance::HasAnyCharacter() const
-{
-	for (const FCharacterSlotData& Slot: CharacterSlots)
-	{
-		if (Slot.bIsCreated)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool URGameInstance::IsSlotEmpty(int32 SlotIndex) const
-{
-	if (SlotIndex<0 || SlotIndex>=CharacterSlots.Num())
-	{
-		return true;
-	}
-	return !CharacterSlots[SlotIndex].bIsCreated;
-}
-
-FCharacterSlotData URGameInstance::GetCharacterData(int32 SlotIndex) const
-{
-	if (SlotIndex<0 || SlotIndex >= CharacterSlots.Num())
-	{
-		UE_LOG(LogTemp,Error,TEXT("유요하지 않은 슬롯 인덱스: %d"),SlotIndex);
-		return FCharacterSlotData();
-	}
-	return CharacterSlots[SlotIndex];
-}
-
-FCharacterSlotData URGameInstance::GetSelectedCharacterData() const
-{
-	if (SelectedCharacterIndex<0 || SelectedCharacterIndex>=CharacterSlots.Num())
-	{
-		UE_LOG(LogTemp,Warning,TEXT("캐릭터 선택 안됨!!"));
-		return FCharacterSlotData();
-	}
-	return CharacterSlots[SelectedCharacterIndex];
 }
 
 bool URGameInstance::DeleteCharacter(int32 SlotIndex)
@@ -344,4 +356,17 @@ bool URGameInstance::DeleteCharacter(int32 SlotIndex)
 
 	UE_LOG(LogTemp,Log,TEXT("캐릭터 삭제됨!! Slot: %d, Name:'%s'"),SlotIndex,*DeletedName);
 	return true;
+}
+
+FString URGameInstance::GetClassName(ECharacterClassType Class) const
+{
+	switch (Class)
+	{
+	case ECharacterClassType::Knight: return TEXT("Knight");
+	case ECharacterClassType::Archer: return TEXT("Archer");
+	case ECharacterClassType::Mage:   return TEXT("Mage");
+	case ECharacterClassType::None:
+	default:
+		return TEXT("None");
+	}
 }

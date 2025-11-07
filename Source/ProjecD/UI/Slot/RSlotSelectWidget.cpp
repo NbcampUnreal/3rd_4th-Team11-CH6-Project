@@ -37,7 +37,7 @@ void URSlotSelectWidget::HandleSlotClick(int32 SlotIndex)
 	{
 		// 빈 슬롯 -> 대상 슬롯 저장후 직업 선택 UI로 이동
 		GI->SelectedCharacterIndex=SlotIndex; // 직업 선택 이후 해당 슬롯에 생성예정
-		UE_LOG(LogTemp,Warning,TEXT("빈 슬롯 %d 클릭->직업 선택 UI로 이동(미구현)"));
+		UE_LOG(LogTemp, Warning, TEXT("빈 슬롯 클릭->직업 선택 UI로 이동(미구현)"));
 
 		// 구현후 주석해제 예정
 		// GI->GetUIManager()->ShowUI(GI->JobSelectWidgetClass);
@@ -69,9 +69,9 @@ void URSlotSelectWidget::UpdateSlotUI(int32 SlotIndex, UButton* Button, UTextBlo
 		FString ClassName;
 		switch (Data.CharacterClass)
 		{
-		case ECharacterClassType::Knight: ClassName=TEXT("KNIGHT"); break;
-		case ECharacterClassType::Archer: ClassName=TEXT("ARCHER"); break;
-		case ECharacterClassType::Mage:   ClassName=TEXT("Mage"); break;
+		case ECharacterClassType::Knight: ClassName="KNIGHT"; break;
+		case ECharacterClassType::Archer: ClassName="ARCHER"; break;
+		case ECharacterClassType::Mage:   ClassName="Mage"; break;
 		default: ClassName=TEXT("ERROR"); break;
 		}
 		if (ClassText) ClassText->SetText(FText::FromString(ClassName));

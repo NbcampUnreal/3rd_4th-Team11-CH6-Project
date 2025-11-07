@@ -102,6 +102,30 @@ void URGameInstance::ShowSlotSelectUI()
 	}
 }
 
+bool URGameInstance::HasCharacterOfClass(ECharacterClassType Class) const
+{
+	for (const FCharacterSlotData& Slot: CharacterSlots)
+	{
+		if (Slot.bIsCreated && Slot.CharacterClass==Class)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+int32 URGameInstance::FindAvailableSlotForClass(ECharacterClassType Class) const
+{
+	if (!HasCharacterOfClass(Class))
+	{
+		for (int32 i=0; i<CharacterSlots.Num(); i++)
+		{
+			if (IsSlotEmpty(i)) return i;
+		}
+	}
+	return -1;
+}
+
 bool URGameInstance::IsValidCharacterName(const FString& Name, FString& OutErrorMessage) const
 {
 	FString TrimmedName=Name.TrimStartAndEnd();

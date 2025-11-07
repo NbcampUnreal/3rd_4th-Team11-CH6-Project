@@ -6,6 +6,7 @@
 
 class UROutGameUIManager;
 class URBaseOutGameWidget;
+class URSlotSelectWidget;
 
 //캐릭터 직업 열거형- SKill에서 Class를 써서 뒤에 구분되게 ClassType으로 씀
 UENUM(BlueprintType)
@@ -27,7 +28,6 @@ FORCEINLINE bool operator!=(ECharacterClassType A,ECharacterClassType B)
 {
 	return !(A==B);
 }
-
 
 //캐릭터 슬롯 데이터 구조체
 USTRUCT(BlueprintType)
@@ -51,7 +51,7 @@ struct FCharacterSlotData
 	UPROPERTY(BlueprintReadWrite,Category="Character")
 	int32 Level=1;
 
-	//추후에 골드 나 경험치 부분 추가
+	//추후에 골드나 경험치 부분 추가
 };
 
 //게임 인스턴스
@@ -62,13 +62,10 @@ class PROJECD_API URGameInstance : public UGameInstance
 
 public:
 	URGameInstance();
-
 	virtual void Init() override;
+	virtual void OnWorldChanged(UWorld* OldWorld,UWorld* NewWorld) override; // 멀티플레이어 설정
 
-	// 멀티플레이어 설정
-	virtual void OnWorldChanged(UWorld* OldWorld,UWorld* NewWorld) override;
-
-	// UI팀 관련 설정 //
+	// UI팀 관련 설정 
 	UFUNCTION(BlueprintCallable,Category="UI")
 	UROutGameUIManager* GetUIManager() const { return UIManager; }
 
@@ -76,7 +73,7 @@ public:
 	void ShowTitleScreen(); // 타이틀 화면 표시
 
 	UFUNCTION(BlueprintCallable,Category="UI")
-	void ShowCharacterUI(); // 캐릭터 유무에 따라 UI 분기 나눠짐
+	void ShowSlotSelectUI();
 
 //---------모드------------
 	//솔로 파티여부
@@ -101,35 +98,28 @@ public:
 		bIsSoloMode = (NewCount <= 1); //인원 1 이하 = 솔로
 	}
 
-	// 캐릭터 슬롯 시스템 //
-
-	//캐릭터 슬롯 데이터 (나이트,아처,메이지 총 3개)
+	// 캐릭터 슬롯 시스템 - 직업별 1개 제한!)
 	UPROPERTY(BlueprintReadWrite,Category="Character")
-	TArray<FCharacterSlotData> CharacterSlots;
-
-	//현재 선택딘 캐릭터 인덱스 (-1인 경우 선택 X)
+	TArray<FCharacterSlotData> CharacterSlots; //캐릭터 슬롯 데이터 (나이트,아처,메이지 총 3개)
+	
 	UPROPERTY(BlueprintReadWrite,Category="Character")
-	int32 SelectedCharacterIndex=-1;
+	int32 SelectedCharacterIndex=-1; //현재 선택딘 캐릭터 인덱스 (-1인 경우 선택 X)
 
-	/**
-	 * 캐릭터 닉네임 유효성 검사
-	 * @param Name:검사할 캐릭터 닉네임
-	 * @param OutErrorMessage: 에러메세지 (실패시)
-	 * @return : 유효한지 여부
-	 */
+	// 직업 제한 함수
 	UFUNCTION(BlueprintCallable,Category="Character")
-	bool IsValidCharacterName(const FString& Name,FString& OutErrorMessage) const;
+	bool HasCharacterOfClass(ECharacterClassType Class) const;
 
-	/**
-	 * 캐릭터 생성
-	 * @param SlotIndex 슬롯 인덱스 (0=나이트,1=궁수,2=메이지)
-	 * SlotIndex : 다 동일한 파라미터라서 이후 해당 파라미터 주석설명이 없음.
-	 * @param CLass : 캐릭터 직업
-	 * @parma Name: 캐릭터 닉네임
-	 * @return 은 성공여부. return은 코드마다 값이 달라서 주석을 추가함.
-	 */
 	UFUNCTION(BlueprintCallable,Category="Character")
-	bool CreateCharacter(int32 SlotIndex,ECharacterClassType Class,const FString& Name);
+	int32 FindAvailableSlotForClass(ECharacterClassType Class) const;
+
+	// 캐릭터 관리 //
+	
+	// 캐릭터 닉네임 유효성 검사
+	UFUNCTION(BlueprintCallable,Category="Character")
+	bool IsValidCharacterName(const FString& Name,FString& OutErrorMessage) const; 
+	
+	UFUNCTION(BlueprintCallable,Category="Character")
+	bool CreateCharacter(int32 TargetSlotIndex,ECharacterClassType Class,const FString& Name);
 
 	//캐릭터 선택, return은 성공 여부
 	UFUNCTION(BlueprintCallable,Category="Character")
@@ -155,22 +145,26 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Character")
 	bool DeleteCharacter(int32 SlotIndex);
 
+	//직업열거형->문자열 변환 함수
+	FString GetClassName(ECharacterClassType Class) const;
+
+	//UI 위젯 클래스들
+	UPROPERTY(EditDefaultsOnly,Category="UI")
+	TSubclassOf<URBaseOutGameWidget> TitleScreenClass;
+
+	UPROPERTY(EditDefaultsOnly,Category="UI")
+	TSubclassOf<class URSlotSelectWidget> SlotSelectWidgetClass;
 
 private:
 	//UI팀 관련 설정 //
-	void InitializeUIManager(); // UIManager 초기화 함수
+	void InitializeUIManager(); // UI 초기화
+	void InitializeCharacterSlots(); // 슬롯 초기화
 	
-	UPROPERTY()
-	UROutGameUIManager* UIManager;
-
-	UPROPERTY(EditDefaultsOnly,Category="UI") // TitleScreen Widget 클래스 참조
-	TSubclassOf<URBaseOutGameWidget> TitleScreenClass;
-
-	//케릭터 관련
-	void InitializeCharacterSlots();
-
 	//닉네임 규칙
 	static constexpr int32 MIN_NAME_LENGTH = 2; // 최소 길이
 	static constexpr int32 MAX_NAME_LENGTH = 10; // 최대 길이
+
+	UPROPERTY()
+	UROutGameUIManager* UIManager;
 	
 };

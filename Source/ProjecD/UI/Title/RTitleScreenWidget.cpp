@@ -56,8 +56,11 @@ void URTitleScreenWidget::OnPlayClicked()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Play버튼 클릭됨!!"));
 
-	//세션 브라우저 화면으로 전환 -나중에 구현
-	// UE_UE_LOG(LogTemp, Warning, TEXT("[RTitleScreenWidget] 세션 브라우저로 이동"));
+	URGameInstance* GI=Cast<URGameInstance>(GetGameInstance());
+	if (GI)
+	{
+		GI->ShowSlotSelectUI();
+	}
 	
 }
 

@@ -47,7 +47,7 @@ struct FCharacterSlotData
 	UPROPERTY(BlueprintReadWrite, Category="Character")
 	int32 Level = 1;
 
-	//추후 골드, 경험치 추가
+	//추후 골드, 경험치 추가 ,브랜치갱신을 위한 추가
 };
 
 //게임 인스턴스

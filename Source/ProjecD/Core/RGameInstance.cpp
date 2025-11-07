@@ -1,6 +1,7 @@
 #include "Core/RGameInstance.h"
 #include "UI/Manager/ROutGameUIManager.h"
 #include "UI/Base/RBaseOutGameWidget.h"
+#include "UI/Slot/RSlotSelectWidget.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -12,18 +13,7 @@ URGameInstance::URGameInstance()
 void URGameInstance::Init()
 {
 	Super::Init();
-
 	UIManager=NewObject<UROutGameUIManager>(this);
-
-	if (UIManager)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("UIManager is created!"));
-	}
-	else
-	{
-		UE_LOG(LogTemp,Error,TEXT("UIManager is not created!"));
-	}
-	
 	InitializeCharacterSlots();
 }
 
@@ -35,11 +25,9 @@ void URGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 	if (NewWorld && NewWorld->IsGameWorld())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("새로운 월드 진입: %s"),*NewWorld->GetName());
-
 		InitializeUIManager();
 	}
 }
-
 
 void URGameInstance::InitializeUIManager()
 {
@@ -67,7 +55,6 @@ void URGameInstance::InitializeCharacterSlots()
 {
 	// 캐릭터 슬롯 3개 초기화 (Knight,Archer,Mage)
 	CharacterSlots.SetNum(3);
-
 	for (int32 i=0; i<3; i++)
 	{
 		CharacterSlots[i].bIsCreated=false;
@@ -77,7 +64,6 @@ void URGameInstance::InitializeCharacterSlots()
 	}
 
 	SelectedCharacterIndex=-1;
-
 	UE_LOG(LogTemp,Warning,TEXT("캐릭터 슬롯 초기화: %d slots"),CharacterSlots.Num());
 }
 
@@ -88,7 +74,6 @@ void URGameInstance::ShowTitleScreen()
 		UE_LOG(LogTemp,Error,TEXT("UIManager 가 Nullptr!!"));
 		return;
 	}
-
 	if (!TitleScreenClass)
 	{
 		UE_LOG(LogTemp,Error,TEXT("TitleScreenClass가 설정 안됨!!"));
@@ -98,25 +83,22 @@ void URGameInstance::ShowTitleScreen()
 	UIManager->ShowUI(TitleScreenClass);
 }
 
-void URGameInstance::ShowCharacterUI()
+void URGameInstance::ShowSlotSelectUI()
 {
 	if (!UIManager)
 	{
 		UE_LOG(LogTemp,Error,TEXT("UIManager가 Nullptr!!"));
 		return;
 	}
-	
-	// 캐릭터 유무에 따른 UI 분기점
-	if (HasAnyCharacter())
+
+	if (SlotSelectWidgetClass)
 	{
-		//캐릭터 있음-> 캐릭터 선택 UI
-		UE_LOG(LogTemp,Log,TEXT("캐릭터가 존재! - 캐릭터 선택 UI로 전환!"));
-		// CharacterSelectWidget 구현후 ShowUI 호출
+		UIManager->ShowUI(SlotSelectWidgetClass);
+		UE_LOG(LogTemp,Log,TEXT("슬롯 선택 UI 표시"));
 	}
 	else
 	{
-		//캐릭터 없음 -> 캐릭터 생성 UI
-		UE_LOG(LogTemp,Log,TEXT("캐릭터가 없음! - 캐릭터 생성 UI로 전환!"));
+		UE_LOG(LogTemp, Error, TEXT("SlotSelectWidgetClass 설정 안됨!!"));
 	}
 }
 

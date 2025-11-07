@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Core/RGameInstance.h"
 #include "UI/Manager/ROutGameUIManager.h"
+#include "Core/Subsystem/ROutGameCharacterDataSubsystem.h"
 
 
 void URClassSelectWidget::NativeConstruct()
@@ -65,11 +66,11 @@ void URClassSelectWidget::UpdateClassButton(UButton* Button, UTextBlock* StatusT
 
 bool URClassSelectWidget::IsClassAlreadyCreated(ECharacterClassType Class) const
 {
-	URGameInstance* GI=GetGameInstance();
-	if (!GI) return false;
+	UROutGameCharacterDataSubsystem* Subsystem=URGameInstance::GetCharacterDataSubsystem(this);
+	if (!Subsystem) return false;
 
 	//모든 슬롯 확인
-	for (const FCharacterSlotData& SlotData: GI->CharacterSlots)
+	for (const FCharacterSlotData& SlotData: Subsystem->CharacterSlots)
 	{
 		if (SlotData.bIsCreated && SlotData.CharacterClass==Class)
 		{
@@ -101,16 +102,16 @@ void URClassSelectWidget::OnMageButtonClicked()
 
 void URClassSelectWidget::HandleClassSelection(ECharacterClassType SelectedClass)
 {
-	URGameInstance* GI=GetGameInstance();
-	if (!GI)
+	UROutGameCharacterDataSubsystem* Subsystem=URGameInstance::GetCharacterDataSubsystem(this);
+	if (!Subsystem)
 	{
 		UE_LOG(LogTemp,Error,TEXT("GameInstance가 Nullptr!!"));
 		return;
 	}
 
 	//선택한 직업 임시 저장하기
-	GI->TempSelectedClass=SelectedClass;
-	UE_LOG(LogTemp, Log, TEXT("직업 선택 완료! Class: %d, 목표 슬롯: %d"), (int32)SelectedClass, GI->SelectedCharacterIndex);
+	Subsystem->TempSelectedClass=SelectedClass;
+	UE_LOG(LogTemp, Log, TEXT("직업 선택 완료! Class: %d, 목표 슬롯: %d"), (int32)SelectedClass, Subsystem->SelectedCharacterIndex);
 }
 
 URGameInstance* URClassSelectWidget::GetGameInstance() const

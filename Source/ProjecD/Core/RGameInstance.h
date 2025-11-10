@@ -64,7 +64,13 @@ public:
 	virtual void Init() override;
 	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
 	
-//-------UI 표시----------
+//-------UI 관리----------
+
+	//UI 매니저 접근
+	UFUNCTION(BlueprintCallable, Category="UI")
+	UROutGameUIManager* GetUIManager() const { return UIManager; }
+
+	//UI 표시 함수
 	UFUNCTION(BlueprintCallable, Category="UI")
 	void ShowTitleScreen();
 
@@ -102,6 +108,10 @@ public:
 	// 직업 열거형 -> 문자열 변환
 	FString GetClassName(ECharacterClassType Class) const;
 	
+//--------서브 시스템 접근 함수
+	UFUNCTION(BlueprintCallable,Category="Character",meta=(WorldContext="WorldContextObject"))
+	static UROutGameCharacterDataSubsystem* GetCharacterDataSubsystem(const UObject* WorldContextObject);
+
 //--------- UI 위젯 클래스들----------
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<URBaseOutGameWidget> TitleScreenClass;
@@ -111,14 +121,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<URBaseOutGameWidget> ClassSelectWidgetClass;
-
-//---------Getter함수-----	
-	UFUNCTION(BlueprintCallable, Category="UI")
-	UROutGameUIManager* GetUIManager() const { return UIManager; }
-
-	//서브 시스템 접근 함수
-	UFUNCTION(BlueprintCallable,Category="Character",meta=(WorldContext="WorldContextObject"))
-	static UROutGameCharacterDataSubsystem* GetCharacterDataSubsystem(const UObject* WorldContextObject);
 
 private:
 	void InitializeUIManager();

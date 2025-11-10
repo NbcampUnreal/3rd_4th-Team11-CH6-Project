@@ -6,7 +6,10 @@
 #include "ROutGameCharacterDataSubsystem.generated.h"
 
 /**
- * GameInstance에서의 캐릭터 슬롯 데이터 및 로직을 따로 전담해서 관리함!!
+ * 캐릭터 슬롯 데이터 및 로직 전담 관리 서브시스템
+ * 캐릭터 생성 / 선택/ 삭제
+ * 닉네임 유효성 검증
+ * 슬롯 상태 관리
  */
 UCLASS()
 class PROJECD_API UROutGameCharacterDataSubsystem : public UGameInstanceSubsystem
@@ -14,10 +17,8 @@ class PROJECD_API UROutGameCharacterDataSubsystem : public UGameInstanceSubsyste
 	GENERATED_BODY()
 
 public:
-	// UGameInstanceSubsystem 오버라이드: 생성자 대신 초기화에 사용합니다.
+	//--------초기화
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-
-	// UGameInstanceSubsystem 오버라이드: 종료시 호출
 	virtual void Deinitialize() override;
 
 	//------캐릭터 UI 관련 설정 (슬롯,닉네임등)--------

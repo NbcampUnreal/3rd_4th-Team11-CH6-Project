@@ -7,6 +7,7 @@
 
 class UButton;
 class UTextBlock;
+class UBorder;
 
 /**
  * 캐릭터 생성하는 슬롯 위젯
@@ -48,14 +49,17 @@ private:
 	UPROPERTY(meta=(BindWidget)) UButton* Slot0Button;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot0Name;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot0Class;
+	UPROPERTY(meta=(BindWidget)) UBorder* Slot0Border;
 
 	UPROPERTY(meta=(BindWidget)) UButton* Slot1Button;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot1Name;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot1Class;
+	UPROPERTY(meta=(BindWidget)) UBorder* Slot1Border;
 
 	UPROPERTY(meta=(BindWidget)) UButton* Slot2Button;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot2Name;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot2Class;
+	UPROPERTY(meta=(BindWidget)) UBorder* Slot2Border;
 	
 	
 };

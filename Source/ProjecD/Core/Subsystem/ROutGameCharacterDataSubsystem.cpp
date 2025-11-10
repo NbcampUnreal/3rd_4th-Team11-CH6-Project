@@ -23,13 +23,13 @@ void UROutGameCharacterDataSubsystem::InitializeCharacterSlots()
 	CharacterSlots.SetNum(3);
 	for (int32 i=0; i<3; i++)
 	{
-		CharacterSlots[i].bIsCreated=false; //
-		CharacterSlots[i].CharacterClass=ECharacterClassType::None; //
-		CharacterSlots[i].CharacterName=TEXT(""); //
-		CharacterSlots[i].Level=1; //
+		CharacterSlots[i].bIsCreated=false; 
+		CharacterSlots[i].CharacterClass=ECharacterClassType::None; 
+		CharacterSlots[i].CharacterName=TEXT(""); 
+		CharacterSlots[i].Level=1; 
 	}
-	SelectedCharacterIndex=-1; //
-	UE_LOG(LogTemp,Warning,TEXT("캐릭터 슬롯 초기화: %d slots"),CharacterSlots.Num()); //
+	SelectedCharacterIndex=-1; 
+	UE_LOG(LogTemp,Warning,TEXT("캐릭터 슬롯 초기화: %d slots"),CharacterSlots.Num()); 
 }
 
 bool UROutGameCharacterDataSubsystem::HasAnyCharacter() const
@@ -87,7 +87,7 @@ FCharacterSlotData UROutGameCharacterDataSubsystem::GetCharacterData(int32 SlotI
 {
 	if (SlotIndex<0 || SlotIndex >= CharacterSlots.Num())
 	{
-		UE_LOG(LogTemp,Error,TEXT("유요하지 않은 슬롯 인덱스: %d"),SlotIndex); //
+		UE_LOG(LogTemp,Error,TEXT("유요하지 않은 슬롯 인덱스: %d"),SlotIndex); 
 		return FCharacterSlotData();
 	}
 	return CharacterSlots[SlotIndex];
@@ -97,7 +97,7 @@ FCharacterSlotData UROutGameCharacterDataSubsystem::GetSelectedCharacterData() c
 {
 	if (SelectedCharacterIndex<0 || SelectedCharacterIndex>=CharacterSlots.Num())
 	{
-		UE_LOG(LogTemp,Warning,TEXT("캐릭터 선택 안됨!!")); //
+		UE_LOG(LogTemp,Warning,TEXT("캐릭터 선택 안됨!!")); 
 		return FCharacterSlotData();
 	}
 	return CharacterSlots[SelectedCharacterIndex];
@@ -105,26 +105,26 @@ FCharacterSlotData UROutGameCharacterDataSubsystem::GetSelectedCharacterData() c
 
 bool UROutGameCharacterDataSubsystem::IsValidCharacterName(const FString& Name, FString& OutErrorMessage) const
 {
-	FString TrimmedName=Name.TrimStartAndEnd(); //
+	FString TrimmedName=Name.TrimStartAndEnd(); 
 
 	//1. 빈 문자열 검사
 	if (TrimmedName.IsEmpty())
 	{
-		OutErrorMessage=TEXT("닉네임을 입력해주세요."); //
+		OutErrorMessage=TEXT("닉네임을 입력해주세요.");
 		return false;
 	}
 
 	//2. 최소 길이 검사
 	if (TrimmedName.Len()<MIN_NAME_LENGTH)
 	{
-		OutErrorMessage=FString::Printf(TEXT("닉네임은 최소 %d자 이상이어야 합니다."),MIN_NAME_LENGTH); //
+		OutErrorMessage=FString::Printf(TEXT("닉네임은 최소 %d자 이상이어야 합니다."),MIN_NAME_LENGTH); 
 		return false;
 	}
 
 	//3. 최대 길이 검사
 	if (TrimmedName.Len()>MAX_NAME_LENGTH)
 	{
-		OutErrorMessage=FString::Printf(TEXT("닉네임은 최대 %d자까지 가능합니다."),MAX_NAME_LENGTH); //
+		OutErrorMessage=FString::Printf(TEXT("닉네임은 최대 %d자까지 가능합니다."),MAX_NAME_LENGTH); 
 		return false;
 	}
 
@@ -140,7 +140,7 @@ bool UROutGameCharacterDataSubsystem::IsValidCharacterName(const FString& Name, 
 		//허용되지 않는 문자 발견
 		if (!bIsKorean && !bIsEnglish && !bIsNumber)
 		{
-			OutErrorMessage=TEXT("닉네임은 한글,영문,숫자만 사용할 수 있습니다."); //
+			OutErrorMessage=TEXT("닉네임은 한글,영문,숫자만 사용할 수 있습니다."); 
 			return false;
 		}
 	}
@@ -148,7 +148,7 @@ bool UROutGameCharacterDataSubsystem::IsValidCharacterName(const FString& Name, 
 	//5. 공백 검사
 	if (TrimmedName.Contains(TEXT(" ")))
 	{
-		OutErrorMessage=TEXT("닉네임에 공백을 사용할 수 없습니다."); //
+		OutErrorMessage=TEXT("닉네임에 공백을 사용할 수 없습니다.");
 		return false;
 	}
 
@@ -157,7 +157,7 @@ bool UROutGameCharacterDataSubsystem::IsValidCharacterName(const FString& Name, 
 	{
 		if (Slot.bIsCreated && Slot.CharacterName.Equals(TrimmedName))
 		{
-			OutErrorMessage=TEXT("이미 사용 중인 닉네입니다."); //
+			OutErrorMessage=TEXT("이미 사용 중인 닉네입니다."); 
 			return false;
 		}
 	}
@@ -239,10 +239,10 @@ bool UROutGameCharacterDataSubsystem::DeleteCharacter(int32 SlotIndex)
 	}
 
 	//캐릭터 삭제
-	CharacterSlots[SlotIndex].bIsCreated=false; //
-	CharacterSlots[SlotIndex].CharacterClass=ECharacterClassType::None; //
-	CharacterSlots[SlotIndex].CharacterName=TEXT(""); //
-	CharacterSlots[SlotIndex].Level=1; //
+	CharacterSlots[SlotIndex].bIsCreated=false; 
+	CharacterSlots[SlotIndex].CharacterClass=ECharacterClassType::None; 
+	CharacterSlots[SlotIndex].CharacterName=TEXT(""); 
+	CharacterSlots[SlotIndex].Level=1; 
 
 	//선택된 캐릭터 였다면 선택 해제
 	if (SelectedCharacterIndex==SlotIndex)

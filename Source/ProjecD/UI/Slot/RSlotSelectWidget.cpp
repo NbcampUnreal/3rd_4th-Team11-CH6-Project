@@ -1,6 +1,7 @@
 #include "UI/Slot/RSlotSelectWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/RGameInstance.h"
 #include "Core/Subsystem/ROutGameCharacterDataSubsystem.h"
@@ -68,6 +69,10 @@ void URSlotSelectWidget::UpdateSlotUI(int32 SlotIndex, UButton* Button, UTextBlo
 
 	FCharacterSlotData Data=Subsystem->GetCharacterData(SlotIndex);
 
+	//Border 배열
+	UBorder* Borders[]= { Slot0Border,Slot1Border,Slot2Border};
+	UBorder* CurrentBorder=(SlotIndex >= 0 && SlotIndex < 3) ? Borders[SlotIndex] : nullptr;
+
 	if (Data.bIsCreated)
 	{
 		//생성된 캐릭터 표시
@@ -83,14 +88,19 @@ void URSlotSelectWidget::UpdateSlotUI(int32 SlotIndex, UButton* Button, UTextBlo
 		default: ClassName=TEXT("ERROR"); break;
 		}
 		if (ClassText) ClassText->SetText(FText::FromString(ClassName));
+
+		if (CurrentBorder) CurrentBorder->SetBrushColor(FLinearColor(0.20f, 0.60f, 0.86f, 1.0f)); // #3498DB
 	}
 	else
 	{
 		// 빈 슬롯 표시
 		if (Button) Button->SetIsEnabled(true);
-		if (NameText) NameText->SetText(FText::FromString("새 캐릭터\n생성"));
-		if (ClassText) ClassText->SetText(FText::GetEmpty());
+		if (NameText) NameText->SetText(FText::FromString("Create New Character"));
+		if (ClassText) ClassText->SetText(FText::FromString("+"));
+
+		if (CurrentBorder) CurrentBorder->SetBrushColor(FLinearColor(0.17f, 0.24f, 0.31f, 1.0f)); // #2C3E50
 	}
+	
 }
 
 URGameInstance* URSlotSelectWidget::GetGameInstance() const

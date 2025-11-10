@@ -17,9 +17,9 @@ UENUM(BlueprintType)
 enum class ECharacterClass : uint8
 {
 	ECC_Common UMETA(DisplayName = "Common"),
-	ECC_Warrior UMETA(DisplayName = "Warrior"),
+	ECC_Knight UMETA(DisplayName = "Knight"),
 	ECC_Archer UMETA(DisplayName = "Archer"),
-	ECC_Mage UMETA(DisplayName = "Mage")
+	ECC_Wizard UMETA(DisplayName = "Wizard")
 };
 
 // RSkillData: 데이터 테이블의 한 행을 구성할 스킬 데이터 구조체입니다.
@@ -60,4 +60,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Data")
 	float ManaCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Data")
+	float BaseDamage;
 };

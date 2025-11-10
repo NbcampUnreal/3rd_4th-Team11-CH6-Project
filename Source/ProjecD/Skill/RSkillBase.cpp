@@ -1,4 +1,3 @@
-// 프로젝트 설정의 설명 페이지에 저작권 표시를 채우십시오.
 
 
 #include "Skill/RSkillBase.h"

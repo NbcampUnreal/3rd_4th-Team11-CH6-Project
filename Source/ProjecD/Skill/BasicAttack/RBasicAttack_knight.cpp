@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+
 
 
 #include "Skill/BasicAttack/RBasicAttack_knight.h"
@@ -16,7 +16,7 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 {
 	Super::ActivateSkill_Implementation();
 
-	// Clear any existing timer to ensure combo can continue
+	// 콤보를 계속할 수 있도록 기존 타이머를 초기화합니다.
 	GetWorld()->GetTimerManager().ClearTimer(ComboResetTimer);
 
 	ComboCount++;
@@ -24,13 +24,13 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOuter());
 	if (!OwnerCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_knight: OwnerCharacter is not valid."));
+		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_knight: OwnerCharacter가 유효하지 않습니다."));
 		return;
 	}
 
 	FVector Start = OwnerCharacter->GetActorLocation();
 	FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
-	float AttackRange = 200.0f; // Increased range
+	float AttackRange = 200.0f; // 증가된 사거리
 	float AttackRadius = 50.0f;
 
 	FVector End;
@@ -39,28 +39,28 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 	switch (ComboCount)
 	{
 	case 1:
-		// 1st Combo: Horizontal slash
-		UE_LOG(LogTemp, Log, TEXT("Knight Attack: Combo 1 (Horizontal)"));
+		// 1단 콤보: 횡 베기
+		UE_LOG(LogTemp, Log, TEXT("기사 공격: 1단 콤보 (횡 베기)"));
 		End = Start + ForwardVector * AttackRange;
 		Rotation = OwnerCharacter->GetActorRotation();
 		break;
 	case 2:
-		// 2nd Combo: Diagonal slash (to the left)
-		UE_LOG(LogTemp, Log, TEXT("Knight Attack: Combo 2 (Diagonal)"));
+		// 2단 콤보: 대각선 베기 (왼쪽)
+		UE_LOG(LogTemp, Log, TEXT("기사 공격: 2단 콤보 (대각선 베기)"));
 		Rotation = OwnerCharacter->GetActorRotation() + FRotator(0, -45.0f, 0);
 		End = Start + Rotation.Vector() * AttackRange;
 		break;
 	case 3:
-		// 3rd Combo: Vertical slash (strong forward attack)
-		UE_LOG(LogTemp, Log, TEXT("Knight Attack: Combo 3 (Vertical)"));
-		AttackRadius = 75.0f; // Larger radius for final attack
+		// 3단 콤보: 종 베기 (강력한 전방 공격)
+		UE_LOG(LogTemp, Log, TEXT("기사 공격: 3단 콤보 (종 베기)"));
+		AttackRadius = 75.0f; // 마지막 공격을 위한 더 큰 반경
 		End = Start + ForwardVector * AttackRange;
 		Rotation = OwnerCharacter->GetActorRotation();
-		ComboCount = 0; // Reset combo after 3rd attack
+		ComboCount = 0; // 3단 공격 후 콤보 초기화
 		break;
 	default:
 		ComboCount = 0;
-		return; // Should not happen
+		return; // 발생해서는 안 됨
 	}
 
 	TArray<FHitResult> HitResults;
@@ -84,12 +84,12 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 	{
 		for (const FHitResult& Hit : HitResults)
 		{
-			// Apply Damage here in the future
-			UE_LOG(LogTemp, Log, TEXT("Knight Attack Hit: %s with %.2f total damage."), *Hit.GetActor()->GetName(), GetTotalDamage());
+			// 향후 여기에 대미지 적용
+			UE_LOG(LogTemp, Log, TEXT("기사 공격 적중: %s에게 총 %.2f 대미지."), *Hit.GetActor()->GetName(), GetTotalDamage());
 		}
 	}
 
-	// Set a timer to reset the combo if no new attack is made
+	// 새로운 공격이 없으면 콤보를 초기화하는 타이머 설정
 	if (ComboCount != 0)
 	{
 		GetWorld()->GetTimerManager().SetTimer(ComboResetTimer, this, &URBasicAttack_knight::ResetCombo, 1.5f, false);
@@ -98,6 +98,6 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 
 void URBasicAttack_knight::ResetCombo()
 {
-	UE_LOG(LogTemp, Log, TEXT("Knight Attack: Combo Reset"));
+	UE_LOG(LogTemp, Log, TEXT("기사 공격: 콤보 초기화"));
 	ComboCount = 0;
 }

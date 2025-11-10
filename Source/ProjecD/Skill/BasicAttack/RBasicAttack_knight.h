@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+
 
 #pragma once
 
@@ -7,7 +7,8 @@
 #include "RBasicAttack_knight.generated.h"
 
 /**
- * 
+ * 전사(Knight)의 기본 공격 스킬 클래스입니다.
+ * 3단 콤보 공격 로직을 포함합니다.
  */
 UCLASS()
 class PROJECD_API URBasicAttack_knight : public URSkillBase

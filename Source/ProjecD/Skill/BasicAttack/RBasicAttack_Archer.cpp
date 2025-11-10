@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+
 
 
 #include "Skill/BasicAttack/RBasicAttack_Archer.h"
@@ -13,15 +13,15 @@ void URBasicAttack_Archer::ActivateSkill_Implementation()
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOuter());
 	if (!OwnerCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_Archer: OwnerCharacter is not valid."));
+		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_Archer: OwnerCharacter가 유효하지 않습니다."));
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("Archer Attack: Firing %d arrows in a %.1f degree fan with %d penetration."), NumArrows, FanAngle, PenetrationCount);
+	UE_LOG(LogTemp, Log, TEXT("궁수 공격: %d개의 화살을 %.1f도 부채꼴로 %d 관통으로 발사합니다."), NumArrows, FanAngle, PenetrationCount);
 
 	FVector StartLocation = OwnerCharacter->GetActorLocation();
 	FRotator StartRotation = OwnerCharacter->GetActorRotation();
-	float AttackRange = 3000.0f; // Long range for archer
+	float AttackRange = 3000.0f; // 궁수를 위한 긴 사거리
 
 	float HalfAngle = FanAngle / 2.0f;
 	float AngleStep = (NumArrows > 1) ? FanAngle / (NumArrows - 1) : 0.0f;
@@ -49,7 +49,7 @@ void URBasicAttack_Archer::ActivateSkill_Implementation()
 			true
 		);
 
-		// Sort hits by distance from the start
+		// 시작 지점으로부터의 거리에 따라 히트 정렬
 		HitResults.Sort([StartLocation](const FHitResult& A, const FHitResult& B) {
 			return FVector::DistSquared(A.ImpactPoint, StartLocation) < FVector::DistSquared(B.ImpactPoint, StartLocation);
 		});
@@ -60,14 +60,14 @@ void URBasicAttack_Archer::ActivateSkill_Implementation()
 		{
 			if (HitCount >= PenetrationCount)
 			{
-				break; // Stop after reaching penetration limit
+				break; // 관통 제한에 도달하면 중지
 			}
 
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor && !DamagedActorsThisArrow.Contains(HitActor))
 			{
-				// Apply Damage here in the future
-				UE_LOG(LogTemp, Log, TEXT("Archer Arrow %d Hit: %s with %.2f total damage."), i + 1, *HitActor->GetName(), GetTotalDamage());
+				// 향후 여기에 대미지 적용
+				UE_LOG(LogTemp, Log, TEXT("궁수 화살 %d 적중: %s에게 총 %.2f 대미지."), i + 1, *HitActor->GetName(), GetTotalDamage());
 				DamagedActorsThisArrow.Add(HitActor);
 				HitCount++;
 			}

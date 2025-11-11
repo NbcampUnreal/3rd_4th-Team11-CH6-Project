@@ -20,6 +20,7 @@ class PROJECD_API URSlotSelectWidget : public URBaseOutGameWidget
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void ShowUI() override; 
 
 public:
 	//슬롯 새로고침- 캐릭 생성 및 삭제 후 호출됨
@@ -45,6 +46,9 @@ private:
 	//슬롯 UI 업데이트
 	void UpdateSlotUI(int32 SlotIndex,UButton* Button,UTextBlock* NameText,UTextBlock* ClassText);
 
+	//슬롯 제목 업데이트
+	void UpdateTitleText();
+
 	// UI 바인딩
 	UPROPERTY(meta=(BindWidget)) UButton* Slot0Button;
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot0Name;
@@ -61,5 +65,6 @@ private:
 	UPROPERTY(meta=(BindWidget)) UTextBlock* Slot2Class;
 	UPROPERTY(meta=(BindWidget)) UBorder* Slot2Border;
 	
-	
+	// 제목 UI 바인딩
+	UPROPERTY(meta=(BindWidget)) UTextBlock* TitleText;
 };

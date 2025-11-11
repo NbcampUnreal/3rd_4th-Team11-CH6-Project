@@ -90,14 +90,18 @@ void URNameInputWidget::OnCreateClicked()
 
 	if (bSuccess)
 	{
-		UE_LOG(LogTemp, Log, TEXT("캐릭터 생성 성공! 이름: %s, 직업: %d, 슬롯: %d"),
-			*InputName,
-			(int32)Subsystem->TempSelectedClass,
-			Subsystem->SelectedCharacterIndex
-		);
+		UE_LOG(LogTemp,Log,TEXT("캐릭터 생성 성공!!"));
+		UE_LOG(LogTemp,Log,TEXT("- 이름: %s"),*InputName);
+		UE_LOG(LogTemp,Log,TEXT("- 직업: %d"),(int32)Subsystem->TempSelectedClass);
+		UE_LOG(LogTemp,Log,TEXT("- 슬롯: %d"),Subsystem->SelectedCharacterIndex);
 
-		// 로비 UI로 전환 (미구현)
-		UE_LOG(LogTemp, Warning, TEXT("TODO: 로비 UI로 전환 필요!"));
+		//슬롯 선택 UI로 복귀
+		URGameInstance* GI=GetGameInstance();
+		if (GI)
+		{
+			GI->ShowSlotSelectUI();
+			UE_LOG(LogTemp,Log,TEXT("슬롯 UI로 복귀 완료!"));
+		}
 	}
 	else
 	{

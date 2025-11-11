@@ -155,11 +155,14 @@ bool UROutGameCharacterDataSubsystem::IsValidCharacterName(const FString& Name, 
 	//6. 중복검사(같은 닉네임이 이미 있는지)
 	for (const FCharacterSlotData& Slot: CharacterSlots)
 	{
-		if (Slot.bIsCreated && Slot.CharacterName.Equals(TrimmedName))
+		//bIsCreated가 true이고, 이름이 비어 있지 않는 경우에만 검사
+		if (Slot.bIsCreated && !Slot.CharacterName.IsEmpty() && Slot.CharacterName.Equals(TrimmedName))
 		{
-			OutErrorMessage=TEXT("이미 사용 중인 닉네입니다."); 
+			OutErrorMessage=TEXT("이미 사용중인 닉네임입니다.");
+			UE_LOG(LogTemp,Warning,TEXT("중복 닉네임 발견: %s"),*Slot.CharacterName);
 			return false;
 		}
+
 	}
 
 	//모든 검사 통과시

@@ -15,6 +15,7 @@ void URGameInstance::Init()
 {
 	Super::Init();
 	UIManager=NewObject<UROutGameUIManager>(this);
+	InitializeUIManager();
 }
 
 void URGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
@@ -25,7 +26,6 @@ void URGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 	if (NewWorld && NewWorld->IsGameWorld())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("새로운 월드 진입: %s"),*NewWorld->GetName());
-		InitializeUIManager();
 	}
 }
 
@@ -102,6 +102,24 @@ void URGameInstance::ShowClassSelectUI()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("ClassSelectWidgetClass 설정 안됨!!"));
+	}
+}
+
+void URGameInstance::ShowNameInputUI()
+{
+	if (!UIManager)
+	{
+		UE_LOG(LogTemp,Error,TEXT("UIManager가 Nullptr!!"));
+		return;
+	}
+	if (NameInputWidgetClass)
+	{
+		UIManager->ShowUI(NameInputWidgetClass);
+		UE_LOG(LogTemp,Log,TEXT("닉네임 입력 UI 표시"));
+	}
+	else
+	{
+		UE_LOG(LogTemp,Error,TEXT("NameInputWidgetClass 설정 안됨!!"));
 	}
 }
 

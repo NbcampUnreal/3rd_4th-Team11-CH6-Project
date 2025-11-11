@@ -1,6 +1,7 @@
 #include "UI/Class/RClassSelectWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/RGameInstance.h"
 #include "UI/Manager/ROutGameUIManager.h"
@@ -26,9 +27,9 @@ void URClassSelectWidget::NativeConstruct()
 	}
 
 	//직업명 설정 (고정됨!)
-	if (KnightNameText) KnightNameText->SetText(FText::FromString(TEXT("기사")));
-	if (ArcherNameText) ArcherNameText->SetText(FText::FromString(TEXT("궁수")));
-	if (MageNameText) MageNameText->SetText(FText::FromString(TEXT("마법사")));
+	if (KnightNameText) KnightNameText->SetText(FText::FromString(TEXT("KNIGHT")));
+	if (ArcherNameText) ArcherNameText->SetText(FText::FromString(TEXT("ARCHER")));
+	if (MageNameText) MageNameText->SetText(FText::FromString(TEXT("MAGE")));
 
 	//버튼 상태 갱신
 	RefreshClassButtons();
@@ -48,11 +49,22 @@ void URClassSelectWidget::UpdateClassButton(UButton* Button, UTextBlock* StatusT
 {
 	if (!Button || !StatusText) return;
 
+	// Border 설정
+	UBorder* CurrentBorder=nullptr;
+	if (Class == ECharacterClassType::Knight) CurrentBorder=KnightBorder;
+	else if (Class == ECharacterClassType::Archer) CurrentBorder=ArcherBorder;
+	else if (Class == ECharacterClassType::Mage) CurrentBorder=MageBorder;
+	
 	if (IsClassAlreadyCreated(Class))
 	{
 		//이미 생성된 직업-> 비활성화!!
 		Button->SetIsEnabled(false);
-		StatusText->SetText(FText::FromString(TEXT("생성됨")));
+		StatusText->SetText(FText::FromString(TEXT("Created")));
+
+		if (CurrentBorder)
+		{
+			CurrentBorder->SetBrushColor(FLinearColor(0.15f, 0.20f, 0.25f, 1.0f));
+		}
 
 		UE_LOG(LogTemp,Log,TEXT("직업 %d 이미 생성됨 - 비활성화!"),(int32)Class);
 	}
@@ -60,7 +72,12 @@ void URClassSelectWidget::UpdateClassButton(UButton* Button, UTextBlock* StatusT
 	{
 		//선택가능->활성화
 		Button->SetIsEnabled(true);
-		StatusText->SetText(FText::FromString(TEXT("선택")));
+		StatusText->SetText(FText::FromString(TEXT("Choose")));
+
+		if (CurrentBorder)
+		{
+			CurrentBorder->SetBrushColor(FLinearColor(0.70f, 0.70f, 0.70f, 1.0f));
+		}
 	}
 }
 
@@ -112,6 +129,14 @@ void URClassSelectWidget::HandleClassSelection(ECharacterClassType SelectedClass
 	//선택한 직업 임시 저장하기
 	Subsystem->TempSelectedClass=SelectedClass;
 	UE_LOG(LogTemp, Log, TEXT("직업 선택 완료! Class: %d, 목표 슬롯: %d"), (int32)SelectedClass, Subsystem->SelectedCharacterIndex);
+
+	//이릅 입력 UI(NameInputUI)로 전환
+	URGameInstance* GI=GetGameInstance();
+	if (GI && GI->GetUIManager())
+	{
+		GI->ShowNameInputUI();
+		UE_LOG(LogTemp,Warning,TEXT("이름 입력 UI로 전환 요청됨"));
+	}
 }
 
 URGameInstance* URClassSelectWidget::GetGameInstance() const

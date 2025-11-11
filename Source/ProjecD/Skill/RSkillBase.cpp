@@ -1,3 +1,4 @@
+// 프로젝트 설정의 설명 페이지에 저작권 표시를 채우십시오.
 
 
 #include "Skill/RSkillBase.h"
@@ -6,8 +7,6 @@
 URSkillBase::URSkillBase()
 {
     // 필요한 경우 기본 생성자 로직
-	BonusDamage = 0.0f;
-	AttackSpeedModifier = 1.0f;
 }
 
 void URSkillBase::PostInitProperties()
@@ -50,18 +49,4 @@ void URSkillBase::RemovePassiveEffect_Implementation()
     // RemovePassiveEffect의 기본 구현입니다.
     // 특정 패시브 스킬 클래스에서 이를 오버라이드합니다.
     UE_LOG(LogTemp, Warning, TEXT("기본 스킬에서 RemovePassiveEffect_Implementation 호출됨: %s"), *CachedSkillData.SkillName.ToString());
-}
-
-float URSkillBase::GetTotalDamage() const
-{
-	return CachedSkillData.BaseDamage + BonusDamage;
-}
-
-float URSkillBase::GetFinalCooldown() const
-{
-	if (AttackSpeedModifier <= 0.0f)
-	{
-		return CachedSkillData.Cooldown;
-	}
-	return CachedSkillData.Cooldown / AttackSpeedModifier;
 }

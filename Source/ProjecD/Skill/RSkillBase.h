@@ -26,6 +26,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill")
 	FRSkillData CachedSkillData;
 
+	// 실시간으로 적용되는 추가 공격력 (패시브, 버프 등)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
+	float BonusDamage;
+
+	// 최종 공격력을 계산하여 반환하는 함수
+	UFUNCTION(BlueprintPure, Category = "Skill")
+	float GetTotalDamage() const;
+
+	// 실시간으로 적용되는 공격속도 계수 (패시브, 버프 등)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
+	float AttackSpeedModifier;
+
+	// 최종 쿨다운을 계산하여 반환하는 함수
+	UFUNCTION(BlueprintPure, Category = "Skill")
+	float GetFinalCooldown() const;
+
 	// 스킬 데이터를 사용하여 스킬을 초기화하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	virtual void InitializeSkill(const FRSkillData& InSkillData);

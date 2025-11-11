@@ -18,11 +18,51 @@ void URSlotSelectWidget::NativeConstruct()
 	RefreshSlots();
 }
 
+void URSlotSelectWidget::ShowUI()
+{
+	Super::ShowUI();
+	//UI가 표시 될떄마다 슬롯 새로고침
+	RefreshSlots();
+
+	//제목 업데이트
+	UpdateTitleText();
+	
+	UE_LOG(LogTemp,Log,TEXT("슬롯 UI 갱신 완료!"));
+}
+
 void URSlotSelectWidget::RefreshSlots()
 {
 	UpdateSlotUI(0,Slot0Button,Slot0Name,Slot0Class);
 	UpdateSlotUI(1,Slot1Button,Slot1Name,Slot1Class);
 	UpdateSlotUI(2,Slot2Button,Slot2Name,Slot2Class);
+}
+
+void URSlotSelectWidget::UpdateTitleText()
+{
+	if (!TitleText)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("TitleText가 바인딩 안됨!"));
+		return;
+	}
+	
+	//서브시스템 접근
+	UROutGameCharacterDataSubsystem* Subsystem=URGameInstance::GetCharacterDataSubsystem(this);
+	if (!Subsystem)
+	{
+		UE_LOG(LogTemp,Error,TEXT("Subsystem 접근 실패!!"));
+		return;
+	}
+
+	//캐릭터 유무에 따른 텍스트 변경
+	if (Subsystem->HasAnyCharacter())
+	{
+		TitleText->SetText(FText::FromString(TEXT("Select & Start!!!")));
+	}
+	else
+	{
+		TitleText->SetText(FText::FromString(TEXT("Create Character")));
+	}
+	
 }
 
 void URSlotSelectWidget::OnSlot0Clicked() {HandleSlotClick(0);}
@@ -55,7 +95,16 @@ void URSlotSelectWidget::HandleSlotClick(int32 SlotIndex)
 		//생성된 캐릭터 -> 선택
 		if (Subsystem->SelectCharacter(SlotIndex)) 
 		{
-			UE_LOG(LogTemp,Log,TEXT("캐릭터 선택 완료! 슬롯 %d"),SlotIndex); // 게임월드로 이동하는것 구현예정
+			UE_LOG(LogTemp,Log,TEXT("캐릭터 선택 완료! 슬롯 %d"),SlotIndex);
+
+			//선택된 캐릭터 정보 로그
+			FCharacterSlotData SelectedData=Subsystem->GetSelectedCharacterData();
+			UE_LOG(LogTemp, Log, TEXT("  - 이름: %s"), *SelectedData.CharacterName);
+			UE_LOG(LogTemp, Log, TEXT("  - 직업: %d"), (int32)SelectedData.CharacterClass);
+
+			//로비 레벨로 이동
+			UGameplayStatics::OpenLevel(this,FName("Lobby_Level"));
+			UE_LOG(LogTemp,Warning,TEXT("로비 레벨로 이동!"));
 		}
 	}
 	
@@ -89,7 +138,7 @@ void URSlotSelectWidget::UpdateSlotUI(int32 SlotIndex, UButton* Button, UTextBlo
 		}
 		if (ClassText) ClassText->SetText(FText::FromString(ClassName));
 
-		if (CurrentBorder) CurrentBorder->SetBrushColor(FLinearColor(0.20f, 0.60f, 0.86f, 1.0f)); // #3498DB
+		if (CurrentBorder) CurrentBorder->SetBrushColor(FLinearColor(0.10f, 0.30f, 0.45f, 1.0f)); // 어두운 파란색
 	}
 	else
 	{

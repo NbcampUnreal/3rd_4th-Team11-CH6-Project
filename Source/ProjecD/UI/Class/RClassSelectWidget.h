@@ -7,6 +7,7 @@
 
 class UButton;
 class UTextBlock;
+class UBorder;
 
 /**
  *직업(클래스) 선택 UI 위젯
@@ -27,48 +28,31 @@ public:
 	void RefreshClassButtons(); 
 
 private:
-	// UI 요소 //
+//=================UI 요소 ==================//
 	// 나이트, 왼쪽, 고정 
-	UPROPERTY(meta=(BindWidget))
-	UButton* KnightButton;
-	
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* KnightNameText;
-	
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* KnightStatusText; // 나이트 선택 또는 생성됨
+	UPROPERTY(meta=(BindWidget)) UButton* KnightButton;
+	UPROPERTY(meta=(BindWidget)) UTextBlock* KnightNameText;
+	UPROPERTY(meta=(BindWidget)) UTextBlock* KnightStatusText; // 나이트 선택 또는 생성됨
+	UPROPERTY(meta=(BindWidget)) UBorder* KnightBorder;  // 테두리 슬롯 관련
 	
 	// 아처, 가운데 ,고정
-	UPROPERTY(meta=(BindWidget))
-	UButton* ArcherButton;
-
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* ArcherNameText;
-
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* ArcherStatusText; // 아처 선택 또는 생성됨
+	UPROPERTY(meta=(BindWidget)) UButton* ArcherButton;
+	UPROPERTY(meta=(BindWidget)) UTextBlock* ArcherNameText;
+	UPROPERTY(meta=(BindWidget)) UTextBlock* ArcherStatusText; // 아처 선택 또는 생성됨
+	UPROPERTY(meta=(BindWidget)) UBorder* ArcherBorder;
 
 	//메이지, 오른쪽, 고정
-	UPROPERTY(meta=(BindWidget))
-	UButton* MageButton;
-
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* MageNameText;
-
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* MageStatusText; // 마법사 선택 또는 생성됨
+	UPROPERTY(meta=(BindWidget)) UButton* MageButton;
+	UPROPERTY(meta=(BindWidget)) UTextBlock* MageNameText;
+	UPROPERTY(meta=(BindWidget)) UTextBlock* MageStatusText; // 마법사 선택 또는 생성됨
+	UPROPERTY(meta=(BindWidget)) UBorder* MageBorder;
 
 	//버튼 클릭 이벤트
-	UFUNCTION()
-	void OnKnightButtonClicked();
+	UFUNCTION() void OnKnightButtonClicked();
+	UFUNCTION() void OnArcherButtonClicked();
+	UFUNCTION() void OnMageButtonClicked();
 
-	UFUNCTION()
-	void OnArcherButtonClicked();
-
-	UFUNCTION()
-	void OnMageButtonClicked();
-
-	//헬버 함수들
+//======헬퍼 함수들============
 
 	//직업 선택 공통 처리
 	void HandleClassSelection(ECharacterClassType SelectedClass);

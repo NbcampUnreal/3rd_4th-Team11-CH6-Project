@@ -7,6 +7,7 @@
 class UROutGameUIManager;
 class URBaseOutGameWidget;
 class URSlotSelectWidget;
+class URNameInputWidget;
 class UROutGameCharacterDataSubsystem;
 
 //캐릭터 직업 열거형
@@ -79,6 +80,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="UI")
 	void ShowClassSelectUI();
+
+	UFUNCTION(BlueprintCallable,Category="UI")
+	void ShowNameInputUI();
 	
 
 //-------모드------------
@@ -121,6 +125,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<URBaseOutGameWidget> ClassSelectWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly,Category="UI")
+	TSubclassOf<URBaseOutGameWidget> NameInputWidgetClass;
 
 private:
 	void InitializeUIManager();

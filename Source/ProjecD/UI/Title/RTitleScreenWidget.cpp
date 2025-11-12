@@ -10,7 +10,8 @@
 void URTitleScreenWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UE_LOG(LogTemp,Warning,TEXT("타이틀 화면 생성됨!!"));
+	
+	UE_LOG(LogTemp,Warning,TEXT("타이틀 화면 생성됨, 포커스 활성화됨!!"));
 	
 	if (PlayButton)
 	{

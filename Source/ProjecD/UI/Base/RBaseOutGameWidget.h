@@ -27,6 +27,9 @@ public:
 	//뒤로가기
 	virtual bool CanGoBack() const { return true; }\
 
+	//포커스 관련 설정
+	virtual bool Initialize() override;
+
 protected:
 	// 초기화
 	virtual void NativeConstruct() override;

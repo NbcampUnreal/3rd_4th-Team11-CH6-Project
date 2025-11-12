@@ -17,6 +17,8 @@ class PROJECD_API URTitleScreenWidget : public URBaseOutGameWidget
 	GENERATED_BODY()
 
 protected:
+	virtual void NativeConstruct() override;
+	
 	// UI 컴포넌트- 블루프린트 바인딩용
 	UPROPERTY(meta=(BindWidget))
 	UButton* PlayButton;
@@ -30,8 +32,6 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	UButton* QuitButton;
 
-	virtual void NativeConstruct() override;
-
 private:
 	// 버튼 클릭 이벤트들
 	UFUNCTION()
@@ -42,9 +42,9 @@ private:
 
 	UFUNCTION()
 	void OnCreditsClicked();
-
+	
 	UFUNCTION()
-	void OnQuitClicked();
+	void OnQuitButtonClicked();
 
 public:
 	virtual bool CanGoBack() const override {return false;} // 타이틀 화면은 Quit이 있으므로.

@@ -10,6 +10,16 @@ URBaseOutGameWidget::URBaseOutGameWidget(const FObjectInitializer& ObjectInitial
 	SetIsFocusable(true);
 }
 
+void URBaseOutGameWidget::InitializeUI()
+{
+	//기본 구현 상태. 자식위젯의 필요에 의해 생성
+}
+
+void URBaseOutGameWidget::CleanupUI()
+{
+	//기본 구현 상태. 자식위젯의 필요에 의해 생성
+}
+
 bool URBaseOutGameWidget::Initialize()
 {
 	if (!Super::Initialize())
@@ -36,6 +46,9 @@ void URBaseOutGameWidget::NativeConstruct()
 
 void URBaseOutGameWidget::ShowUI()
 {
+	// UI초기화
+	InitializeUI();
+
 	//화면에 추가
 	AddToViewport();
 
@@ -78,8 +91,19 @@ FReply URBaseOutGameWidget::NativeOnKeyDown(const FGeometry& InGeometry, const F
 
 void URBaseOutGameWidget::HideUI()
 {
-	//화면에서 제거
+	//1. 자식 UI 정리
+	CleanupUI();
+	
+	//2. 화면에서 제거
 	RemoveFromParent();
 	UE_LOG(LogTemp, Log, TEXT("%s 숨김"), *GetClass()->GetName());
 }
 
+UROutGameUIManager* URBaseOutGameWidget::GetUIManager() const
+{
+	if (const URGameInstance* GameInstance = Cast<URGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+	{
+		return GameInstance->GetUIManager();
+	}
+	return nullptr;
+}

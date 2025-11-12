@@ -5,6 +5,7 @@
 #include "Core/RGameInstance.h"
 #include "Core/Subsystem/ROutGameCharacterDataSubsystem.h"
 #include "UI/Manager/ROutGameUIManager.h"
+#include "UI/Popup/RQuitConfirmWidget.h"
 
 
 void URTitleScreenWidget::NativeConstruct()
@@ -45,13 +46,10 @@ void URTitleScreenWidget::NativeConstruct()
 
 	if (QuitButton)
 	{
-		QuitButton->OnClicked.AddDynamic(this,&URTitleScreenWidget::OnQuitClicked);
+		QuitButton->OnClicked.AddDynamic(this,&URTitleScreenWidget::OnQuitButtonClicked);
 		UE_LOG(LogTemp,Log,TEXT("Quit버튼 바인딩 완료"));
 	}
-	else
-	{
-		UE_LOG(LogTemp,Error,TEXT("Quit버튼이 nullptr!"));
-	}
+	
 }
 
 void URTitleScreenWidget::OnPlayClicked()
@@ -79,7 +77,6 @@ void URTitleScreenWidget::OnPlayClicked()
 	{
 		//캐릭터 있을시, 로비로 바로 이동(미구현)
 		UE_LOG(LogTemp,Warning,TEXT("캐릭터가 존재! 인게임 로비로 이동!!"));
-
 		//GI->ShowLobbyUI();
 	}
 	else
@@ -102,24 +99,14 @@ void URTitleScreenWidget::OnCreditsClicked()
 	UE_LOG(LogTemp,Warning,TEXT("Credits 버튼 클릭됨!!"));
 }
 
-void URTitleScreenWidget::OnQuitClicked()
+void URTitleScreenWidget::OnQuitButtonClicked()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Quit 버튼 클릭됨!!"));
+	UE_LOG(LogTemp,Warning,TEXT("Quit 버튼 클릭됨! 확인 팝업 표시!"));
 
-	// 게임 종료
-	if (APlayerController* PC=GetOwningPlayer())
+	if (UROutGameUIManager* UIManager=GetUIManager())
 	{
-		UKismetSystemLibrary::QuitGame(
-			GetWorld(),
-			PC,
-			EQuitPreference::Quit,
-			false
-			);
-
-		UE_LOG(LogTemp,Warning,TEXT("[Title] 게임 종료 요청 완료!!"));
-	}
-	else
-	{
-		UE_LOG(LogTemp,Warning,TEXT("[Title] PlayerController를 찾을수 없음!!"));
+		UIManager->ShowUI(URQuitConfirmWidget::StaticClass());
 	}
 }
+
+

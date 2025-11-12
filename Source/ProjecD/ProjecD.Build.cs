@@ -17,9 +17,13 @@ public class ProjecD : ModuleRules
 			"EnhancedInput",
 			"UMG",
 			"AIModule", 
-			"NavigationSystem", 
-			"GameplayTasks"
-		});
+			"NavigationSystem",
+
+			// 게임 플레이 어빌리티 시스템
+			"GameplayTasks",
+            "GameplayAbilities",
+            "GameplayTags"
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{

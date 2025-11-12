@@ -7,6 +7,18 @@
 URBaseOutGameWidget::URBaseOutGameWidget(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
+	SetIsFocusable(true);
+}
+
+bool URBaseOutGameWidget::Initialize()
+{
+	if (!Super::Initialize())
+	{
+		return false;
+	}
+	
+	SetIsFocusable(true);
+	return true;
 }
 
 void URBaseOutGameWidget::NativeConstruct()
@@ -14,9 +26,12 @@ void URBaseOutGameWidget::NativeConstruct()
 	Super::NativeConstruct();
 	
 	//키 입력 받기 위해 포커스 설정
+	SetIsFocusable(true);
 	SetKeyboardFocus();
+
+	UE_LOG(LogTemp, Log, TEXT("BaseOutGameWidget created, IsFocusable: %s"), 
+		IsFocusable() ? TEXT("True") : TEXT("False"));
 	
-	UE_LOG(LogTemp,Log,TEXT("BaseOutGameWidget is created"));
 }
 
 void URBaseOutGameWidget::ShowUI()
@@ -33,6 +48,7 @@ void URBaseOutGameWidget::ShowUI()
 		PC->bShowMouseCursor=true;
 	}
 
+	SetIsFocusable(true);
 	SetKeyboardFocus();
 	
 	UE_LOG(LogTemp,Log,TEXT("%s 표시됨"),*GetClass()->GetName());
@@ -40,8 +56,9 @@ void URBaseOutGameWidget::ShowUI()
 
 FReply URBaseOutGameWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
-	// ESC키 눌럿을떄 검사
-	if (InKeyEvent.GetKey()==EKeys::Escape)
+	UE_LOG(LogTemp, Warning, TEXT("키 입력 감지: %s"), *InKeyEvent.GetKey().ToString());
+	//  백스페이스 키를 눌럿을떄
+	if (InKeyEvent.GetKey()==EKeys::BackSpace)
 	{
 		if (CanGoBack())
 		{

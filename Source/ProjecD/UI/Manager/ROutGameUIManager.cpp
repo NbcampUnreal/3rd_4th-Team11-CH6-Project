@@ -48,8 +48,18 @@ void UROutGameUIManager::ShowUI(TSubclassOf<URBaseOutGameWidget> WidgetClass)
 	//4. 새 위젯을 현재 위젯으로 설정
 	CurrentWidget=NewWidget;
 
-	//5. 스택에 추가
-	WidgetStack.Add(CurrentWidget);
+	//5. 스택에 추가 (중복 방지 코드 추가함....)
+	if (WidgetStack.Num()==0 || WidgetStack.Last() !=CurrentWidget)
+	{
+		WidgetStack.Add(CurrentWidget);
+		UE_LOG(LogTemp, Warning, TEXT("UIManager: 스택 추가 - %s (스택 크기: %d)"), 
+		*WidgetClass->GetName(), WidgetStack.Num());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UIManager: 중복 방지 - 이미 스택 최상단: %s"), 
+			*WidgetClass->GetName());
+	}
 
 	//6. 위젯 표시
 	CurrentWidget->ShowUI();

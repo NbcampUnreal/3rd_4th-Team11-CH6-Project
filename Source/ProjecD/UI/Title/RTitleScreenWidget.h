@@ -45,5 +45,8 @@ private:
 
 	UFUNCTION()
 	void OnQuitClicked();
+
+public:
+	virtual bool CanGoBack() const override {return false;} // 타이틀 화면은 Quit이 있으므로.
 	
 };

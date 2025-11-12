@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "RBaseOutGameWidget.generated.h"
 
+class UButton;
+
 /**
  *  모든 OutGame UI의 부모 클래스
  */
@@ -22,9 +24,14 @@ public:
 	UFUNCTION(BlueprintCallable,Category="UI")
 	virtual void HideUI();
 
+	//뒤로가기
+	virtual bool CanGoBack() const { return true; }\
+
 protected:
 	// 초기화
 	virtual void NativeConstruct() override;
-	
+
+	// 뒤도가기 키 입력 처리
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	
 };

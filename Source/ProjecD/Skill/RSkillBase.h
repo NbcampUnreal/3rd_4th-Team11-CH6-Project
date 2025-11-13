@@ -1,16 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Abilities/GameplayAbility.h"
 #include "Engine/DataTable.h" // Required for FDataTableRowHandle
 #include "RSkillData.h" // Include our new RSkillData.h
 #include "RSkillBase.generated.h"
 
 /**
- * 모든 스킬의 기본이 되는 클래스입니다.
+ * 모든 스킬의 기본이 되는 클래스입니다. 이제 UGameplayAbility를 상속받습니다.
  */
 UCLASS(Blueprintable, BlueprintType) // 블루프린트에서 사용 가능하도록 설정
-class PROJECD_API URSkillBase : public UObject
+class PROJECD_API URSkillBase : public UGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -38,18 +38,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
 	float AttackSpeedModifier;
 
-	// 최종 쿨다운을 계산하여 반환하는 함수
-	UFUNCTION(BlueprintPure, Category = "Skill")
-	float GetFinalCooldown() const;
+
 
 	// 스킬 데이터를 사용하여 스킬을 초기화하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	virtual void InitializeSkill(const FRSkillData& InSkillData);
-
-	// 스킬을 활성화하는 가상 함수 (액티브 스킬용)
-	UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-	void ActivateSkill();
-	virtual void ActivateSkill_Implementation();
 
 	// 패시브 효과를 적용하는 가상 함수 (패시브 스킬용)
 	UFUNCTION(BlueprintNativeEvent, Category = "Skill")

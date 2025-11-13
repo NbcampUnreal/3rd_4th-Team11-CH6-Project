@@ -1,11 +1,12 @@
 
-
-#include "Skill/RSkillBase.h"
+#include "RSkillBase.h"
 #include "Engine/DataTable.h" // FDataTableRowHandle에 필요
 
 URSkillBase::URSkillBase()
 {
-    // 필요한 경우 기본 생성자 로직
+    // 이 어빌리티는 캐릭터마다 인스턴스화되어야 상태(레벨, 버프 등)를 가질 수 있습니다.
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
     BonusDamage = 0.0f;
     AttackSpeedModifier = 1.0f;
 }
@@ -31,13 +32,6 @@ void URSkillBase::InitializeSkill(const FRSkillData& InSkillData)
     CachedSkillData = InSkillData;
 }
 
-void URSkillBase::ActivateSkill_Implementation()
-{
-    // ActivateSkill의 기본 구현입니다.
-    // 특정 스킬 클래스에서 이를 오버라이드합니다.
-    UE_LOG(LogTemp, Warning, TEXT("기본 스킬에서 ActivateSkill_Implementation 호출됨: %s"), *CachedSkillData.SkillName.ToString());
-}
-
 void URSkillBase::ApplyPassiveEffect_Implementation()
 {
     // ApplyPassiveEffect의 기본 구현입니다.
@@ -55,13 +49,4 @@ void URSkillBase::RemovePassiveEffect_Implementation()
 float URSkillBase::GetTotalDamage() const
 {
     return CachedSkillData.BaseDamage + BonusDamage;
-}
-
-float URSkillBase::GetFinalCooldown() const
-{
-    if (AttackSpeedModifier <= 0.0f)
-    {
-        return CachedSkillData.Cooldown;
-    }
-    return CachedSkillData.Cooldown / AttackSpeedModifier;
 }

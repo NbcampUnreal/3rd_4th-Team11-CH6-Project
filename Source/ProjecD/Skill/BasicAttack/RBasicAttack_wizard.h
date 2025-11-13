@@ -14,7 +14,7 @@
 	GENERATED_BODY()
 
 public:
-	virtual void ActivateSkill_Implementation() override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 protected:
 	// 런타임에 패시브에 의해 변경될 수 있습니다.

@@ -3,14 +3,15 @@
 #include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void URBasicAttack_Archer::ActivateSkill_Implementation()
+void URBasicAttack_Archer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateSkill_Implementation();
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOuter());
+	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
 	if (!OwnerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_Archer: OwnerCharacter가 유효하지 않습니다."));
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
@@ -70,4 +71,6 @@ void URBasicAttack_Archer::ActivateSkill_Implementation()
 			}
 		}
 	}
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

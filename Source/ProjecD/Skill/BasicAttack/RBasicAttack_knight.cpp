@@ -9,19 +9,20 @@ URBasicAttack_knight::URBasicAttack_knight()
 	ComboCount = 0;
 }
 
-void URBasicAttack_knight::ActivateSkill_Implementation()
+void URBasicAttack_knight::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateSkill_Implementation();
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	// 콤보 리셋 타이머를 초기화합니다.
 	GetWorld()->GetTimerManager().ClearTimer(ComboResetTimer);
 
 	ComboCount++;
 
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOuter());
+	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
 	if (!OwnerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_knight: OwnerCharacter가 유효하지 않습니다."));
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
@@ -57,6 +58,7 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 		break;
 	default:
 		ComboCount = 0;
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true); // 잘못된 콤보 상태, 어빌리티 종료
 		return; // 발생해서는 안 됨
 	}
 
@@ -91,6 +93,8 @@ void URBasicAttack_knight::ActivateSkill_Implementation()
 	{
 		GetWorld()->GetTimerManager().SetTimer(ComboResetTimer, this, &URBasicAttack_knight::ResetCombo, 1.5f, false);
 	}
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 void URBasicAttack_knight::ResetCombo()

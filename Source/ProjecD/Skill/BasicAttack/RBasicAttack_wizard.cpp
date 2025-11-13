@@ -3,14 +3,15 @@
 #include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void URBasicAttack_wizard::ActivateSkill_Implementation()
+void URBasicAttack_wizard::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateSkill_Implementation();
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOuter());
+	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
 	if (!OwnerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("URBasicAttack_wizard: OwnerCharacter가 유효하지 않습니다."));
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
@@ -43,6 +44,7 @@ void URBasicAttack_wizard::ActivateSkill_Implementation()
 	else
 	{
 		UE_LOG(LogTemp, Log, TEXT("마법사 공격: 초기 타겟을 찾지 못했습니다."));
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false); // 타겟 없음, 어빌리티 종료
 		return; // 타겟 없음, 공격 중지.
 	}
 
@@ -100,4 +102,6 @@ void URBasicAttack_wizard::ActivateSkill_Implementation()
 		// 데미지 적용 로직
 		UE_LOG(LogTemp, Log, TEXT("...연쇄 공격: %s에게 총 %.2f 데미지."), *Target->GetName(), GetTotalDamage());
 	}
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

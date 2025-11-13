@@ -16,7 +16,8 @@
 public:
 	URBasicAttack_knight();
 
-	virtual void ActivateSkill_Implementation() override;
+public:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 protected:
 	void ResetCombo();

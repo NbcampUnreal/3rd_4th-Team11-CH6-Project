@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+
+class UGameplayAbility;
+
 #include "RSkillData.generated.h"
 
 // ESkillType: 스킬의 종류를 정의합니다 (액티브, 패시브)
@@ -35,7 +38,7 @@ public:
 	// UPROPERTY 매크로를 통해 언리얼 에디터에 노출될 변수들을 선언합니다.
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill Data")
-	TSubclassOf<class URSkillBase> SkillClass;
+	TSubclassOf<UGameplayAbility> AbilityClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Data")
 	int32 SkillID;

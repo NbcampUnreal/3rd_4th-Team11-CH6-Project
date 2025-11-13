@@ -15,14 +15,17 @@ void URClassSelectWidget::NativeConstruct()
 	//버튼 클릭 이벤트 바인딩
 	if (KnightButton)
 	{
+		KnightButton->OnClicked.Clear();
 		KnightButton->OnClicked.AddDynamic(this,&URClassSelectWidget::OnKnightButtonClicked);
 	}
 	if (ArcherButton)
 	{
+		ArcherButton->OnClicked.Clear();
 		ArcherButton->OnClicked.AddDynamic(this,&URClassSelectWidget::OnArcherButtonClicked);
 	}
 	if (MageButton)
 	{
+		MageButton->OnClicked.Clear();
 		MageButton->OnClicked.AddDynamic(this,&URClassSelectWidget::OnMageButtonClicked);
 	}
 

@@ -16,6 +16,7 @@ void URTitleScreenWidget::NativeConstruct()
 	
 	if (PlayButton)
 	{
+		PlayButton->OnClicked.Clear();
 		PlayButton->OnClicked.AddDynamic(this,&URTitleScreenWidget::OnPlayClicked);
 		UE_LOG(LogTemp,Log,TEXT("Play버튼 바인딩 완료!!"));
 	}
@@ -26,6 +27,7 @@ void URTitleScreenWidget::NativeConstruct()
 
 	if (OptionsButton)
 	{
+		OptionsButton->OnClicked.Clear();
 		OptionsButton->OnClicked.AddDynamic(this,&URTitleScreenWidget::OnOptionsClicked);
 		UE_LOG(LogTemp,Log,TEXT("Options버튼 바인딩 완료!!"));
 	}
@@ -36,6 +38,7 @@ void URTitleScreenWidget::NativeConstruct()
 
 	if (CreditsButton)
 	{
+		CreditsButton->OnClicked.Clear();
 		CreditsButton->OnClicked.AddDynamic(this,&URTitleScreenWidget::OnCreditsClicked);
 		UE_LOG(LogTemp,Log,TEXT("Credits버튼 바인딩 완료!!"));
 	}
@@ -46,6 +49,7 @@ void URTitleScreenWidget::NativeConstruct()
 
 	if (QuitButton)
 	{
+		QuitButton->OnClicked.Clear();
 		QuitButton->OnClicked.AddDynamic(this,&URTitleScreenWidget::OnQuitButtonClicked);
 		UE_LOG(LogTemp,Log,TEXT("Quit버튼 바인딩 완료"));
 	}
@@ -103,9 +107,9 @@ void URTitleScreenWidget::OnQuitButtonClicked()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Quit 버튼 클릭됨! 확인 팝업 표시!"));
 
-	if (UROutGameUIManager* UIManager=GetUIManager())
+	if (URGameInstance* GI=Cast<URGameInstance>(GetGameInstance()))
 	{
-		UIManager->ShowUI(URQuitConfirmWidget::StaticClass());
+		GI->ShowQuitConfirmUI();
 	}
 }
 

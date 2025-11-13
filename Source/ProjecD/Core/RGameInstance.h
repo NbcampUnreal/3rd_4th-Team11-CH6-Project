@@ -83,6 +83,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="UI")
 	void ShowNameInputUI();
+
+	UFUNCTION(BlueprintCallable,Category="UI")
+	void ShowQuitConfirmUI();
 	
 
 //-------모드------------
@@ -128,6 +131,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="UI")
 	TSubclassOf<URBaseOutGameWidget> NameInputWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly,Category="UI")
+	TSubclassOf<URBaseOutGameWidget> QuitConfirmWidgetClass;
+	
 
 private:
 	void InitializeUIManager();

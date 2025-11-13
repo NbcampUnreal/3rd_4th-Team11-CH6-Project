@@ -11,11 +11,13 @@ void URQuitConfirmWidget::NativeConstruct()
 
 	if (YesButton)
 	{
+		YesButton->OnClicked.Clear();
 		YesButton->OnClicked.AddDynamic(this,&URQuitConfirmWidget::OnYesButtonClicked);
 		UE_LOG(LogTemp,Log,TEXT("YesButton 바인딩 완!"));
 	}
 	if (NoButton)
 	{
+		NoButton->OnClicked.Clear();
 		NoButton->OnClicked.AddDynamic(this,&URQuitConfirmWidget::OnNoButtonClicked);
 		UE_LOG(LogTemp,Log,TEXT("NoButton 바인딩 완!"));
 	}
@@ -29,12 +31,12 @@ void URQuitConfirmWidget::InitializeUI()
 
 	if (TitleText)
 	{
-		TitleText->SetText(FText::FromString(TEXT("게임 종료 하시겠습니까?")));
+		TitleText->SetText(FText::FromString(TEXT("QUIT THE GAME?")));
 	}
 
 	if (MessageText)
 	{
-		MessageText->SetText(FText::FromString(TEXT("정말 게임을 종료하시겠습니까")));
+		MessageText->SetText(FText::FromString(TEXT("Are you sure want to quit this game?")));
 	}
 }
 

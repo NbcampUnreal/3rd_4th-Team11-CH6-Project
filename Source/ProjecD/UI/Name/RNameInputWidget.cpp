@@ -14,12 +14,14 @@ void URNameInputWidget::NativeConstruct()
 	//-----버튼 바인딩------
 	if (CreateButton)
 	{
+		CreateButton->OnClicked.Clear();
 		CreateButton->OnClicked.AddDynamic(this,&URNameInputWidget::OnCreateClicked);
 		UE_LOG(LogTemp,Log,TEXT("생성 버튼 바인딩 완료!!"));
 	}
 	
 	if (CancelButton)
 	{
+		CancelButton->OnClicked.Clear();
 		CancelButton->OnClicked.AddDynamic(this,&URNameInputWidget::OnCancelClicked);
 		UE_LOG(LogTemp,Log,TEXT("취소 버튼 바인딩 완료!!"));
 	}
@@ -27,6 +29,7 @@ void URNameInputWidget::NativeConstruct()
 	// 텍스트 입력 바인딩
 	if (NameInputBox)
 	{
+		NameInputBox->OnTextChanged.Clear();
 		NameInputBox->OnTextChanged.AddDynamic(this,&URNameInputWidget::OnNameTextChanged);
 		NameInputBox->SetHintText(FText::FromString(TEXT("닉네임을 입력하세요")));
 		UE_LOG(LogTemp,Log,TEXT("텍스트 입력 바인딩 완료!"));

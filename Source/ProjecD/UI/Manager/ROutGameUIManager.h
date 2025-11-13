@@ -4,6 +4,8 @@
 #include "UObject/NoExportTypes.h"
 #include "ROutGameUIManager.generated.h"
 
+class URBaseOutGameWidget;
+
 /**
  * Outgame UI 생성, 전환, 스택 관리 클래스
  */

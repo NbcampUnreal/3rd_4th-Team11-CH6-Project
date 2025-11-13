@@ -11,10 +11,24 @@ void URSlotSelectWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	//버튼 바인딩
-	if (Slot0Button) Slot0Button->OnClicked.AddDynamic(this,&URSlotSelectWidget::OnSlot0Clicked);
-	if (Slot1Button) Slot1Button->OnClicked.AddDynamic(this,&URSlotSelectWidget::OnSlot1Clicked);
-	if (Slot2Button) Slot2Button->OnClicked.AddDynamic(this,&URSlotSelectWidget::OnSlot2Clicked);
-
+	if (Slot0Button)
+	{
+		Slot0Button->OnClicked.Clear();
+		Slot0Button->OnClicked.AddDynamic(this,&URSlotSelectWidget::OnSlot0Clicked);
+	}
+	
+	if (Slot1Button)
+	{
+		Slot1Button->OnClicked.Clear();
+		Slot1Button->OnClicked.AddDynamic(this,&URSlotSelectWidget::OnSlot1Clicked);
+	}
+		
+	if (Slot2Button)
+	{
+		Slot2Button->OnClicked.Clear();
+		Slot2Button->OnClicked.AddDynamic(this,&URSlotSelectWidget::OnSlot2Clicked);
+	}
+	
 	RefreshSlots();
 }
 

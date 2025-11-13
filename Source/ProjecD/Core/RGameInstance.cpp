@@ -123,6 +123,25 @@ void URGameInstance::ShowNameInputUI()
 	}
 }
 
+void URGameInstance::ShowQuitConfirmUI()
+{
+	if (!UIManager)
+	{
+		UE_LOG(LogTemp,Error,TEXT("UIManager가 Nullptr"));
+		return;
+	}
+
+	if (QuitConfirmWidgetClass)
+	{
+		UIManager->ShowUI(QuitConfirmWidgetClass);
+		UE_LOG(LogTemp,Log,TEXT("Quit 확인 팝업 표시"));
+	}
+	else
+	{
+		UE_LOG(LogTemp,Error,TEXT("QuitConfirmWidgetClass 설정 안됨!!"));
+	}
+}
+
 FString URGameInstance::GetClassName(ECharacterClassType Class) const
 {
 	switch (Class)

@@ -34,6 +34,13 @@ bool URBaseOutGameWidget::Initialize()
 void URBaseOutGameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	//중복 생성 방지
+	if (bIsAlreadyConstructed)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s: 이미 Construct됨, 스킵"), *GetClass()->GetName());
+		return;
+	}
 	
 	//키 입력 받기 위해 포커스 설정
 	SetIsFocusable(true);
@@ -42,6 +49,17 @@ void URBaseOutGameWidget::NativeConstruct()
 	UE_LOG(LogTemp, Log, TEXT("BaseOutGameWidget created, IsFocusable: %s"), 
 		IsFocusable() ? TEXT("True") : TEXT("False"));
 	
+	//플래그 설정
+	bIsAlreadyConstructed=true;
+}
+
+void URBaseOutGameWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	//위젯이 완전히 파괴될떄 플래그 리셋하기
+	bIsAlreadyConstructed=false;
+	UE_LOG(LogTemp, Log, TEXT("%s: NativeDestruct 호출"), *GetClass()->GetName());
 }
 
 void URBaseOutGameWidget::ShowUI()

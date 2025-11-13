@@ -38,13 +38,17 @@ public:
 	virtual bool Initialize() override;
 
 protected:
-	// 초기화
+	// 초기화 & 파괴
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 	// 뒤도가기 키 입력 처리
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	//UI Manager를 가져오기 위한 Getter함수 추가
 	UROutGameUIManager* GetUIManager() const;
+
+	//바인딩 완료 플래그
+	bool bIsAlreadyConstructed=false;
 	
 };

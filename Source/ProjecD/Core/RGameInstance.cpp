@@ -6,17 +6,20 @@
 #include "UI/ClassDetail/RClassDetailWidget.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 
 URGameInstance::URGameInstance()
 {
 	//나중에 기본적인 것추가
+	BGMComponent=nullptr;
 }
 
 void URGameInstance::Init()
 {
 	Super::Init();
 	UIManager=NewObject<UROutGameUIManager>(this);
-	InitializeUIManager();
+	
 }
 
 void URGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
@@ -27,6 +30,8 @@ void URGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 	if (NewWorld && NewWorld->IsGameWorld())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("새로운 월드 진입: %s"),*NewWorld->GetName());
+
+		StopOutGameBGM();
 	}
 }
 
@@ -138,8 +143,6 @@ void URGameInstance::ShowClassDetailUI()
 		UE_LOG(LogTemp,Error,TEXT("DetailWidget 표시 실패!"));
 	}
 	
-	
-
 }
 
 void URGameInstance::ShowNameInputUI()
@@ -202,4 +205,63 @@ UROutGameCharacterDataSubsystem* URGameInstance::GetCharacterDataSubsystem(const
 		}
 	}
 	return nullptr;
+}
+
+void URGameInstance::PlayTitleBGM(UWorld* InWorld)
+{
+	if (!OutGameBGM || !InWorld)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BGM] 유효하지 않은 파라미터"));
+		return;
+	}
+
+	StopOutGameBGM();
+
+	// SpawnSound2D 사용 (SoundCue 지원)
+	BGMComponent = UGameplayStatics::SpawnSound2D(
+		InWorld, OutGameBGM, 1.0f, 1.0f, 0.0f, nullptr, true, false);
+
+	if (BGMComponent)
+	{
+		BGMComponent->Play();
+		UE_LOG(LogTemp, Log, TEXT("[BGM] 타이틀 재생 성공: %s"), *OutGameBGM->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("[BGM] SpawnSound2D 실패! AudioDevice 확인 필요"));
+	}
+}
+
+void URGameInstance::PlayLobbyBGM(UWorld* InWorld)
+{
+	if (!LobbyBGM || !InWorld) return;
+
+	StopOutGameBGM();
+
+	BGMComponent = UGameplayStatics::SpawnSound2D(
+		InWorld, LobbyBGM, 1.0f, 1.0f, 0.0f, nullptr, true, false);
+
+	if (BGMComponent)
+	{
+		BGMComponent->Play();
+		UE_LOG(LogTemp, Log, TEXT("[BGM] 로비 재생 성공: %s"), *LobbyBGM->GetName());
+	}
+}
+
+void URGameInstance::PlayOutGameBGM()
+{
+	if (UWorld* World = GetWorld())
+	{
+		PlayTitleBGM(World);  // ← 변경: World 전달
+	}
+}
+
+void URGameInstance::StopOutGameBGM()
+{
+	if (BGMComponent)
+	{
+		BGMComponent->FadeOut(0.5f, 0.0f);
+		BGMComponent = nullptr;
+		UE_LOG(LogTemp, Warning, TEXT(" BGM 강제 정지 및 정리 완료"));
+	}
 }

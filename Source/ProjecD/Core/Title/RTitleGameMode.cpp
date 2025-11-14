@@ -9,6 +9,14 @@ void ARTitleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Log, TEXT("[RTitleGameMode] 타이틀 맵 시작"));
+
+	if (URGameInstance* GI = Cast<URGameInstance>(GetGameInstance()))
+	{
+		if (UWorld* World = GetWorld())
+		{
+			GI->PlayTitleBGM(World);
+		}
+	}
 }
 
 void ARTitleGameMode::PostLogin(APlayerController* NewPlayer)
@@ -53,6 +61,6 @@ void ARTitleGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	//5. Title UI 표시
-	UIManager->ShowUI(TitleWidgetClass);
-	UE_LOG(LogTemp,Log,TEXT("[Title] 타이틀 UI 표시 완료"))
+	GameInstance->ShowTitleScreen();
+	UE_LOG(LogTemp,Log,TEXT("[Title] 타이틀 UI 표시 완료"));
 }

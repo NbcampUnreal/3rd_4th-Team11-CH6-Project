@@ -14,6 +14,7 @@ struct FInputActionValue;
 class URAttributeSet;
 class UGameplayEffect;
 struct FOnAttributeChangeData;
+class UGameplayAbility;
 
 UCLASS()
 class PROJECD_API ARBaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -91,4 +92,23 @@ protected:
 
 	// Helper to register attribute delegates (called from PossessedBy / OnRep_PlayerState)
 	void RegisterAttributeDelegates();
+
+	static const int32 Skillslots = 3;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> SkillSlotAbilities;
+
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> SkillSlotAbilityHandles;
+
+public:
+	UFUNCTION(BLUeprintCallable, Category = "Abilities")
+	void BindSkillAbility(int32 SlotIndex, TSubclassOf<UGameplayAbility> AbilityClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void ActivateSkillInSlot(int32 SlotIndex);
+
+	void OnSkillSlot1(const FInputActionValue& Value);
+	void OnSkillSlot2(const FInputActionValue& Value);
+	void OnSkillSlot3(const FInputActionValue& Value);
 };

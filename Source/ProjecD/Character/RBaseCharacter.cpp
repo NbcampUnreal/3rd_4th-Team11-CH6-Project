@@ -11,6 +11,7 @@
 #include "Controller/RPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Abilities/GameplayAbility.h"
 
 
 ARBaseCharacter::ARBaseCharacter()
@@ -40,6 +41,9 @@ ARBaseCharacter::ARBaseCharacter()
 	{
 		AbilitySystemComponent->AddAttributeSetSubobject(AttributeSet);
 	}
+
+	/*SkillSlotAbilities.SetNumZeroed(Skillslots);
+	SkillSlotAbilityHandles.SetNumZeroed(Skillslots);*/
 }
 
 // Called every frame
@@ -99,6 +103,18 @@ void ARBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 			{
 				EhancedInput->BindAction(PC->JumpAction, ETriggerEvent::Triggered, this, &ARBaseCharacter::StartJump);
 				EhancedInput->BindAction(PC->JumpAction, ETriggerEvent::Completed, this, &ARBaseCharacter::StopJump);
+			}
+			if (PC->SkillInputActions[0])
+			{
+				EhancedInput->BindAction(PC->SkillInputActions[0], ETriggerEvent::Triggered, this, &ARBaseCharacter::OnSkillSlot1);
+			}
+			if (PC->SkillInputActions[1])
+			{
+				EhancedInput->BindAction(PC->SkillInputActions[1], ETriggerEvent::Triggered, this, &ARBaseCharacter::OnSkillSlot2);
+			}
+			if (PC->SkillInputActions[2])
+			{
+				EhancedInput->BindAction(PC->SkillInputActions[2], ETriggerEvent::Triggered, this, &ARBaseCharacter::OnSkillSlot3);
 			}
 		}
 	}
@@ -176,7 +192,7 @@ void ARBaseCharacter::PossessedBy(AController* NewController)
 			AttributeSet->MaxHealth.GetCurrentValue(),
 			AttributeSet->CurrentHealth.GetCurrentValue());
 	}
-	
+
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[ARBaseCharacter] AttributeSet is null after Possess"));
@@ -299,6 +315,66 @@ void ARBaseCharacter::RegisterAttributeDelegates()
 	bAttributeDelegatesRegistered = true;
 }
 
+void ARBaseCharacter::BindSkillAbility(int32 SlotIndex, TSubclassOf<UGameplayAbility> AbilityClass)
+{
+	if (SlotIndex < 0 || SlotIndex >= Skillslots) return;
+
+	// 동일 바인딩이면 아무 작업 안 함
+	if (SkillSlotAbilities.IsValidIndex(SlotIndex) && SkillSlotAbilities[SlotIndex] == AbilityClass) return;
+
+	// 이전 바인딩된 AbilityClass 및 Handle 저장
+	TSubclassOf<UGameplayAbility> PrevClass;
+	FGameplayAbilitySpecHandle PrevHandle;
+	if (SkillSlotAbilities.IsValidIndex(SlotIndex))
+	{
+		PrevClass = SkillSlotAbilities[SlotIndex];
+	}
+	if (SkillSlotAbilityHandles.IsValidIndex(SlotIndex))
+	{
+		PrevHandle = SkillSlotAbilityHandles[SlotIndex];
+	}
+
+	// 새 AbilityClass로 슬롯 갱신 (nullptr 허용 -> 슬롯 언바인드 의미)
+	SkillSlotAbilities[SlotIndex] = AbilityClass;
+
+	// 서버에서만 ASC에 실제 Give/Remove 수행 (권한 중요)
+	if (!AbilitySystemComponent) return;
+
+	// 이전에 부여했던 Ability가 있으면 제거 시도
+	if (PrevHandle.IsValid())
+	{
+		// ClearAbility는 프로젝트의 GAS 버전에 따라 함수명이 다를 수 있습니다.
+		// 대부분의 프로젝트에서는 Handle을 이용해 제거하는 API를 제공합니다.
+		// 존재하지 않으면 프로젝트에 맞춰 적절한 제거 API로 바꿔 주세요.
+		AbilitySystemComponent->ClearAbility(PrevHandle);
+		SkillSlotAbilityHandles[SlotIndex] = FGameplayAbilitySpecHandle(); // reset
+		UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] Cleared previous ability from slot %d"), SlotIndex);
+	}
+
+	// 새로 바인딩할 Ability가 nullptr이면 언바인드만 수행
+	if (!AbilityClass)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] Slot %d unbound"), SlotIndex);
+		return;
+	}
+
+	// 서버 권한이 있는 경우 새 Ability 부여
+	if (HasAuthority())
+	{
+		FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, this);
+		FGameplayAbilitySpecHandle NewHandle = AbilitySystemComponent->GiveAbility(Spec);
+		SkillSlotAbilityHandles[SlotIndex] = NewHandle;
+
+		UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] Bound Ability %s to slot %d (Handle valid=%d)"),
+			*AbilityClass->GetName(), SlotIndex, NewHandle.IsValid() ? 1 : 0);
+	}
+	else
+	{
+		// 클라이언트에서 호출될 경우, 서버 RPC로 요청해야 합니다.
+		UE_LOG(LogTemp, Warning, TEXT("[ARBaseCharacter] BindSkillAbility called on client for slot %d. Call via server RPC."), SlotIndex);
+	}
+}
+
 // callbacks
 void ARBaseCharacter::OnMoveSpeedChanged(const FOnAttributeChangeData& Data)
 {
@@ -391,3 +467,64 @@ void ARBaseCharacter::OnCurrentManaChanged(const FOnAttributeChangeData& Data)
 	UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] CurrentMana changed -> %f"), Data.NewValue);
 	// UI 업데이트 등 여기서 처리
 }
+
+void ARBaseCharacter::ActivateSkillInSlot(int32 SlotIndex)
+{
+	if (SlotIndex < 0 || SlotIndex >= Skillslots) return;
+	if (!AbilitySystemComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ARBaseCharacter] No AbilitySystemComponent when activating slot %d"), SlotIndex);
+		return;
+	}
+
+	// 슬롯에 바인딩된 Ability 클래스 확인
+	TSubclassOf<UGameplayAbility> SkillClass = nullptr;
+	if (SkillSlotAbilities.IsValidIndex(SlotIndex))
+	{
+		SkillClass = SkillSlotAbilities[SlotIndex];
+	}
+
+	if (!SkillClass)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] No ability bound to slot %d"), SlotIndex);
+		return;
+	}
+
+	// 1) 가능한 경우 저장된 SpecHandle로 시도 (서버에서 GiveAbility 했을 때 유효)
+	if (SkillSlotAbilityHandles.IsValidIndex(SlotIndex) && SkillSlotAbilityHandles[SlotIndex].IsValid())
+	{
+		const FGameplayAbilitySpecHandle& Handle = SkillSlotAbilityHandles[SlotIndex];
+		bool bActivatedByHandle = AbilitySystemComponent->TryActivateAbility(Handle);
+		if (bActivatedByHandle)
+		{
+			UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] Activated ability (handle) %s in slot %d"), *SkillClass->GetName(), SlotIndex);
+			return;
+		}
+		// 실패하면 폴백으로 클래스 기반 시도
+	}
+
+	// 2) 클래스 기반 활성화 시도 (클라이언트/서버 모두 가능, 단 해당 클래스가 ASC에 부여되어 있어야 활성화됨)
+	bool bActivatedByClass = AbilitySystemComponent->TryActivateAbilityByClass(SkillClass);
+	if (bActivatedByClass)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ARBaseCharacter] Activated ability (class) %s in slot %d"), *SkillClass->GetName(), SlotIndex);
+		return;
+	}
+
+	// 3) 활성화 실패 처리: 보통 클라이언트에서 호출했을 때 서버에 ability가 없어서 실패하는 경우가 많음.
+	if (!HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ARBaseCharacter] Activation failed for %s in slot %d on client. Request server activation via RPC."),
+			*SkillClass->GetName(), SlotIndex);
+		// 권장: ARPlayerController 또는 캐릭터에 Server RPC를 만들어 서버에서 Activate 요청을 수행하세요.
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ARBaseCharacter] Activation failed for %s in slot %d on server. Check if ability was granted correctly."),
+			*SkillClass->GetName(), SlotIndex);
+	}
+}
+// 콜백 함수
+void ARBaseCharacter::OnSkillSlot1(const FInputActionValue& Value) { ActivateSkillInSlot(0); }
+void ARBaseCharacter::OnSkillSlot2(const FInputActionValue& Value) { ActivateSkillInSlot(1); }
+void ARBaseCharacter::OnSkillSlot3(const FInputActionValue& Value) { ActivateSkillInSlot(2); }

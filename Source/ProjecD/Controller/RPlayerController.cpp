@@ -16,7 +16,8 @@ ARPlayerController::ARPlayerController()
 	InGameHUDClass(nullptr), 
 	CurrentHUD(nullptr)
 {
-	
+	const int32 LocalSkillSlots = 3;
+	SkillInputActions.SetNumZeroed(LocalSkillSlots);
 }
 
 void ARPlayerController::BeginPlay()

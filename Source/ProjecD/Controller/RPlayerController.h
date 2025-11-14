@@ -28,6 +28,9 @@ public:
 	TObjectPtr<UInputAction> LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	TArray<TObjectPtr<UInputAction>> SkillInputActions;
+
 
 	// ===== HUD 세팅 =====
 	// 로비에서 사용할 HUD (WBP_LobbyHUD)

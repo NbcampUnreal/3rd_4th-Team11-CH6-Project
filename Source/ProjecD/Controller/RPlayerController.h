@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,6 +8,7 @@
 
 class UInputAction;
 class UInputMappingContext;
+class UUserWidget;
 
 UCLASS()
 class PROJECD_API ARPlayerController : public APlayerController
@@ -28,6 +29,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
 
+	// ===== HUD 세팅 =====
+	// 로비에서 사용할 HUD (WBP_LobbyHUD)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> LobbyHUDClass;
+
+	// 던전/인게임에서 사용할 HUD (WBP_InGameHUD)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> InGameHUDClass;
+
+	// 현재 화면에 떠 있는 HUD
+	UPROPERTY()
+	TObjectPtr<UUserWidget> CurrentHUD;
+
 
 	virtual void BeginPlay() override;
 	
@@ -36,4 +50,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "InputMode")
 	void EnterUIMode(class UUserWidget* FocusWidget);
+
+private:
+	// 맵 이름(Title / Lobby / Dungeon)에 따라 HUD 생성
+	void SetupHUDForCurrentLevel();
 };

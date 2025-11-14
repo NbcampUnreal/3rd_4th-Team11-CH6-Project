@@ -16,7 +16,7 @@ EBTNodeResult::Type URBTT_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, 
 
 	if (Controller && Target)
 	{
-		Controller->MoveToActor(Target, 1000.0f);
+		Controller->MoveToActor(Target, 100.0f);
 		return EBTNodeResult::Succeeded;
 	}
 

@@ -10,7 +10,12 @@ AR_AIController::AR_AIController()
 void AR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (PlayerPawn)
+	{
+		SetPlayerTarget(PlayerPawn);
+	}
 }
 
 void AR_AIController::OnPossess(APawn* InPawn)

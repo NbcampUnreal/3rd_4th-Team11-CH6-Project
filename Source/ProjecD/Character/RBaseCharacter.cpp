@@ -176,9 +176,15 @@ void ARBaseCharacter::PossessedBy(AController* NewController)
 			AttributeSet->MaxHealth.GetCurrentValue(),
 			AttributeSet->CurrentHealth.GetCurrentValue());
 	}
+	
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[ARBaseCharacter] AttributeSet is null after Possess"));
+	}
+
+	if (ARPlayerController* PC = Cast<ARPlayerController>(NewController))
+	{
+		PC->EnterGameControlMode();
 	}
 }
 

@@ -30,4 +30,10 @@ public:
 
 
 	virtual void BeginPlay() override;
+	
+	UFUNCTION(BlueprintCallable, Category = "InputMode")
+	void EnterGameControlMode();
+	
+	UFUNCTION(BlueprintCallable, Category = "InputMode")
+	void EnterUIMode(class UUserWidget* FocusWidget);
 };

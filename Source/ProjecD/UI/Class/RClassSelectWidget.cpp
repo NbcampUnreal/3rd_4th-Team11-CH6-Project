@@ -133,12 +133,12 @@ void URClassSelectWidget::HandleClassSelection(ECharacterClassType SelectedClass
 	Subsystem->TempSelectedClass=SelectedClass;
 	UE_LOG(LogTemp, Log, TEXT("직업 선택 완료! Class: %d, 목표 슬롯: %d"), (int32)SelectedClass, Subsystem->SelectedCharacterIndex);
 
-	//이릅 입력 UI(NameInputUI)로 전환
+	//직업 상세 정보 UI (ClassDetailUI)로 전환
 	URGameInstance* GI=GetGameInstance();
 	if (GI && GI->GetUIManager())
 	{
-		GI->ShowNameInputUI();
-		UE_LOG(LogTemp,Warning,TEXT("이름 입력 UI로 전환 요청됨"));
+		GI->ShowClassDetailUI();
+		UE_LOG(LogTemp,Warning,TEXT("직업 상세 정보 UI로 전환 정보 요청!!"));
 	}
 }
 

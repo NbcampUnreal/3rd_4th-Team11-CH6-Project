@@ -7,6 +7,7 @@
 class UROutGameUIManager;
 class URBaseOutGameWidget;
 class URSlotSelectWidget;
+class URClassDetailWidget;
 class URNameInputWidget;
 class UROutGameCharacterDataSubsystem;
 
@@ -82,6 +83,9 @@ public:
 	void ShowClassSelectUI();
 
 	UFUNCTION(BlueprintCallable,Category="UI")
+	void ShowClassDetailUI();
+
+	UFUNCTION(BlueprintCallable,Category="UI")
 	void ShowNameInputUI();
 
 	UFUNCTION(BlueprintCallable,Category="UI")
@@ -130,11 +134,14 @@ public:
 	TSubclassOf<URBaseOutGameWidget> ClassSelectWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly,Category="UI")
+	TSubclassOf<URClassDetailWidget> ClassDetailWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly,Category="UI")
 	TSubclassOf<URBaseOutGameWidget> NameInputWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly,Category="UI")
 	TSubclassOf<URBaseOutGameWidget> QuitConfirmWidgetClass;
-	
+
 
 private:
 	void InitializeUIManager();

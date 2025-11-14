@@ -10,6 +10,8 @@ class URSlotSelectWidget;
 class URClassDetailWidget;
 class URNameInputWidget;
 class UROutGameCharacterDataSubsystem;
+class USoundBase;
+class UAudioComponent;
 
 //캐릭터 직업 열거형
 UENUM(BlueprintType)
@@ -90,6 +92,20 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="UI")
 	void ShowQuitConfirmUI();
+
+//--------음악 관리 --------
+//---레벨별 BGM 관리
+	//타이틀 레벨용
+	void PlayTitleBGM(UWorld* InWorld);
+	//로비 로벨용
+	void PlayLobbyBGM(UWorld* InWorld);
+
+	//BGM관리
+	UFUNCTION(BlueprintCallable,Category="Audio")
+	void PlayOutGameBGM();
+
+	UFUNCTION(BlueprintCallable,Category="Audio")
+	void StopOutGameBGM();
 	
 
 //-------모드------------
@@ -141,11 +157,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="UI")
 	TSubclassOf<URBaseOutGameWidget> QuitConfirmWidgetClass;
+	
+	//음악 에셋
+	UPROPERTY(EditDefaultsOnly,Category="Audio")
+	USoundBase* OutGameBGM;
 
+	UPROPERTY(EditDefaultsOnly,Category="Audio")
+	USoundBase* LobbyBGM;
 
 private:
 	void InitializeUIManager();
 
 	UPROPERTY()
 	UROutGameUIManager* UIManager;
+
+	UPROPERTY()
+	UAudioComponent* BGMComponent;
+	
 };

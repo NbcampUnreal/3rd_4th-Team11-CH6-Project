@@ -3,6 +3,7 @@
 #include "UI/Manager/ROutGameUIManager.h"
 #include "UI/Base/RBaseOutGameWidget.h"
 #include "UI/Slot/RSlotSelectWidget.h"
+#include "UI/ClassDetail/RClassDetailWidget.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -103,6 +104,42 @@ void URGameInstance::ShowClassSelectUI()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ClassSelectWidgetClass 설정 안됨!!"));
 	}
+}
+
+void URGameInstance::ShowClassDetailUI()
+{
+	if (!UIManager)
+	{
+		UE_LOG(LogTemp,Error,TEXT("UIManager가 없습니다."));
+		return;
+	}
+	
+	if (!ClassDetailWidgetClass)
+	{
+		UE_LOG(LogTemp,Error,TEXT("ClassDetailWidgetClass 설정 안됨!"));
+		return;
+	}
+
+	//1. UI 표시
+	UIManager->ShowUI(ClassDetailWidgetClass);
+
+	//2. 현재 위젯 가져오기
+	URClassDetailWidget* DetailWidget=Cast<URClassDetailWidget>(UIManager->GetCurrentWidget());
+
+	if (DetailWidget)
+	{
+		//3.직업 정보 설정
+		UROutGameCharacterDataSubsystem* Subsystem=GetCharacterDataSubsystem(this);
+		DetailWidget->SetClassInfo(Subsystem->TempSelectedClass);
+		UE_LOG(LogTemp,Log,TEXT("ClassDetail UI표시 완료"));
+	}
+	else
+	{
+		UE_LOG(LogTemp,Error,TEXT("DetailWidget 표시 실패!"));
+	}
+	
+	
+
 }
 
 void URGameInstance::ShowNameInputUI()
